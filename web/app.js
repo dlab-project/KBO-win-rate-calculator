@@ -4,7 +4,11 @@ const teams = [
         name: "Doosan Bears",
         logo: "../resources/teams/Dosan Bears/logo.svg",
         pitchers: [
-            // 실제 데이터가 없으므로 빈 배열 유지
+            { name: "곽빈", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/68220.jpg", ERA: 4.16 },
+            { name: "잭 로그", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55239.jpg", ERA: 3.23 },
+            { name: "최승용", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51264.jpg", ERA: 4.05 },
+            { name: "최원준", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/67263.jpg", ERA: 4.61 },
+            { name: "콜 어빈", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55257.jpg", ERA: 4.28 }
         ]
     },
     {
@@ -43,7 +47,12 @@ const teams = [
     {
         name: "kt Wiz",
         logo: "../resources/teams/kt Wiz/logo.svg",
-        pitchers: []
+        pitchers: [
+            { name: "소형준", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/50030.jpg", ERA: 3.25 },
+            { name: "고영표", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/64001.jpg", ERA: 2.85 },
+            { name: "윌리엄 쿠에바스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/69032.jpg", ERA: 5.40 },
+            { name: "오원석", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/50859.jpg", ERA: 3.27 }
+        ]
     },
     {
         name: "LG Twins",
@@ -112,6 +121,8 @@ const predictBtn = document.getElementById('predict-btn');
 const resultDiv = document.getElementById('result');
 
 function populateTeamSelects() {
+    homeTeamSelect.innerHTML = '';
+    awayTeamSelect.innerHTML = '';
     teams.forEach((team, idx) => {
         const option1 = document.createElement('option');
         option1.value = idx;
@@ -126,6 +137,17 @@ function populateTeamSelects() {
     // 기본값
     homeTeamSelect.selectedIndex = 0;
     awayTeamSelect.selectedIndex = 1;
+    updateTeamSelectOptions();
+}
+
+function updateTeamSelectOptions() {
+    // 홈팀에서 선택된 팀은 어웨이에서 선택 불가, 반대도 마찬가지
+    const homeIdx = homeTeamSelect.selectedIndex;
+    const awayIdx = awayTeamSelect.selectedIndex;
+    for (let i = 0; i < teams.length; i++) {
+        homeTeamSelect.options[i].disabled = (i === awayIdx);
+        awayTeamSelect.options[i].disabled = (i === homeIdx);
+    }
 }
 
 function updateTeamInfo(teamIdx, isHome) {
@@ -170,12 +192,15 @@ function showPitcherInfo(teamIdx, pitcherIdx, isHome) {
 }
 
 
+
 homeTeamSelect.addEventListener('change', () => {
+    updateTeamSelectOptions();
     updateTeamInfo(homeTeamSelect.value, true);
     showPitcherInfo(homeTeamSelect.value, homePitcherSelect.selectedIndex, true);
 });
 
 awayTeamSelect.addEventListener('change', () => {
+    updateTeamSelectOptions();
     updateTeamInfo(awayTeamSelect.value, false);
     showPitcherInfo(awayTeamSelect.value, awayPitcherSelect.selectedIndex, false);
 });
