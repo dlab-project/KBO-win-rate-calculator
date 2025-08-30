@@ -1,0 +1,80 @@
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #f7f7f7;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    max-width: 600px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 32px 24px;
+}
+h1 {
+    text-align: center;
+    color: #222;
+}
+.teams {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+.team {
+    flex: 1;
+    text-align: center;
+}
+.team-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 8px;
+    background: #eee;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+}
+.vs {
+    font-size: 1.5em;
+    color: #888;
+    margin: 0 16px;
+}
+.team-selectors {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+label {
+    flex: 1;
+    margin: 0 8px;
+}
+select {
+    width: 100%;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-top: 4px;
+}
+button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: #2d7be5;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: background 0.2s;
+}
+button:hover {
+    background: #195bb5;
+}
+#result {
+    text-align: center;
+    font-size: 1.2em;
+    color: #333;
+    min-height: 32px;
+}

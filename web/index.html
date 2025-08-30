@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KBO 승률 예측기</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>KBO 승률 예측기</h1>
+        <div class="teams">
+            <div class="team" id="home-team">
+                <h2>홈팀</h2>
+                <img id="home-logo" src="" alt="홈팀 로고" class="team-logo">
+                <select id="home-pitcher"></select>
+            </div>
+            <div class="vs">VS</div>
+            <div class="team" id="away-team">
+                <h2>어웨이팀</h2>
+                <img id="away-logo" src="" alt="어웨이팀 로고" class="team-logo">
+                <select id="away-pitcher"></select>
+            </div>
+        </div>
+        <div class="team-selectors">
+            <label>홈팀:
+                <select id="home-team-select"></select>
+            </label>
+            <label>어웨이팀:
+                <select id="away-team-select"></select>
+            </label>
+        </div>
+        <button id="predict-btn">예측 하기</button>
+        <div id="result"></div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
