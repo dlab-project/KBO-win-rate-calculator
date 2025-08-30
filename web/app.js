@@ -213,11 +213,14 @@ awayPitcherSelect.addEventListener('change', () => {
     showPitcherInfo(awayTeamSelect.value, awayPitcherSelect.selectedIndex, false);
 });
 
+
 predictBtn.addEventListener('click', () => {
     const homeTeam = teams[homeTeamSelect.value];
     const awayTeam = teams[awayTeamSelect.value];
-    const homePitcher = homePitcherSelect.value;
-    const awayPitcher = awayPitcherSelect.value;
+    const homePitcherIdx = homePitcherSelect.value;
+    const awayPitcherIdx = awayPitcherSelect.value;
+    const homePitcher = homeTeam.pitchers[homePitcherIdx]?.name || '';
+    const awayPitcher = awayTeam.pitchers[awayPitcherIdx]?.name || '';
     if (!homePitcher || !awayPitcher) {
         resultDiv.textContent = '선발 투수를 모두 선택해주세요.';
         return;
