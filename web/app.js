@@ -58,22 +58,22 @@ const teams = [
         name: "LG Twins",
         logo: "../resources/teams/LG Twins/logo.svg",
         pitchers: [
-            { name: "손주영", img_url: "", ERA: 0.00 },
-            { name: "송승기", img_url: "", ERA: 0.00 },
-            { name: "엘리에이저 에르난데스", img_url: "", ERA: 0.00 },
-            { name: "요니 치리노스", img_url: "", ERA: 0.00 },
-            { name: "임찬규", img_url: "", ERA: 0.00 }
+            { name: "손주영", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/67143.jpg", ERA: 3.30 },
+            { name: "송승기", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51111.jpg", ERA: 3.43 },
+            { name: "엘리에이저 에르난데스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54119.jpg", ERA: 4.23 },
+            { name: "요니 치리노스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55146.jpg", ERA: 3.47 },
+            { name: "임찬규", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/61101.jpg", ERA: 2.74 }
         ]
     },
     {
         name: "Lotte Giants",
         logo: "../resources/teams/Lotte Giants/logo.svg",
         pitchers: [
-            { name: "김진욱", img_url: "", ERA: 0.00 },
-            { name: "나균안", img_url: "", ERA: 0.00 },
-            { name: "박세웅", img_url: "", ERA: 0.00 },
-            { name: "찰리 반즈", img_url: "", ERA: 0.00 },
-            { name: "터커 데이비슨", img_url: "", ERA: 0.00 }
+            { name: "김진욱", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51516.jpg", ERA: 10 },
+            { name: "나균안", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/67539.jpg", ERA: 3.97 },
+            { name: "박세웅", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/64021.jpg", ERA: 4.94 },
+            { name: "찰리 반즈", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/52528.jpg", ERA: 5.32 },
+            { name: "터커 데이비슨", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55536.jpg", ERA: 3.65 }
         ]
     },
     {
