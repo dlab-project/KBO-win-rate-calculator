@@ -3,22 +3,42 @@ const teams = [
     {
         name: "Doosan Bears",
         logo: "../resources/teams/Dosan Bears/logo.svg",
-        pitchers: ["곽빈", "잭 로그", "최승용", "최원준", "콜 어빈"]
+        pitchers: [
+            // 실제 데이터가 없으므로 빈 배열 유지
+        ]
     },
     {
         name: "Hanwha Eagles",
         logo: "../resources/teams/Hanwha Eagles/logo.svg",
-        pitchers: ["라이언 와이스", "류현진", "문동주", "엄상백", "코디 폰세"]
+        pitchers: [
+            { name: "문동주", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/52701.jpg", ERA: 3.36 },
+            { name: "라이언 와이스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54755.jpg", ERA: 2.95 },
+            { name: "류현진", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/76715.jpg", ERA: 3.59 },
+            { name: "코디 폰세", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55730.jpg", ERA: 1.53 },
+            { name: "엄상백", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/65056.jpg", ERA: 7.42 }
+        ]
     },
     {
         name: "KIA Tigers",
         logo: "../resources/teams/KIA Tigers/logo.svg",
-        pitchers: ["김도현", "애덤 올러", "양현종", "윤영철", "제임스 네일"]
+        pitchers: [
+            { name: "김도현", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/69745.jpg", ERA: 4.43 },
+            { name: "애덤 올러", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55633.jpg", ERA: 3.48 },
+            { name: "양현종", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/77637.jpg", ERA: 4.41 },
+            { name: "윤영철", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/53613.jpg", ERA: 5.58 },
+            { name: "제임스 네일", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54640.jpg", ERA: 2.27 }
+        ]
     },
     {
         name: "Kiwoom Heroes",
         logo: "../resources/teams/Kiwoom Heroes/logo.svg",
-        pitchers: ["김윤하", "로젠버그", "윤현", "정현우", "하영민"]
+        pitchers: [
+            { name: "김윤하", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54319.jpg", ERA: 6.14 },
+            { name: "로젠버그", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55322.jpg", ERA: 3.23 },
+            { name: "윤현", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55396.jpg", ERA: 8.59 },
+            { name: "정현우", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55313.jpg", ERA: 5.28 },
+            { name: "하영민", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/64350.jpg", ERA: 5.55 }
+        ]
     },
     {
         name: "kt Wiz",
@@ -28,27 +48,57 @@ const teams = [
     {
         name: "LG Twins",
         logo: "../resources/teams/LG Twins/logo.svg",
-        pitchers: ["손주영", "송승기", "엘리에이저 에르난데스", "요니 치리노스", "임찬규"]
+        pitchers: [
+            { name: "손주영", img_url: "", ERA: 0.00 },
+            { name: "송승기", img_url: "", ERA: 0.00 },
+            { name: "엘리에이저 에르난데스", img_url: "", ERA: 0.00 },
+            { name: "요니 치리노스", img_url: "", ERA: 0.00 },
+            { name: "임찬규", img_url: "", ERA: 0.00 }
+        ]
     },
     {
         name: "Lotte Giants",
         logo: "../resources/teams/Lotte Giants/logo.svg",
-        pitchers: ["김진욱", "나균안", "박세웅", "찰리 반즈", "터커 데이비슨"]
+        pitchers: [
+            { name: "김진욱", img_url: "", ERA: 0.00 },
+            { name: "나균안", img_url: "", ERA: 0.00 },
+            { name: "박세웅", img_url: "", ERA: 0.00 },
+            { name: "찰리 반즈", img_url: "", ERA: 0.00 },
+            { name: "터커 데이비슨", img_url: "", ERA: 0.00 }
+        ]
     },
     {
         name: "NC Dinos",
         logo: "../resources/teams/NC Dinos/logo.svg",
-        pitchers: ["라일리", "로건", "신민혁", "신영우", "이재학"]
+        pitchers: [
+            { name: "라일리", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55903.jpg", ERA: 3.64 },
+            { name: "로건", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55912.jpg", ERA: 3.93 },
+            { name: "신민혁", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/68902.jpg", ERA: 5.27 },
+            { name: "신영우", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/53919.jpg", ERA: 7.88 },
+            { name: "이재학", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/60263.jpg", ERA: 4.6 }
+        ]
     },
     {
         name: "Samsung Lions",
         logo: "../resources/teams/Samsung Lions/logo.svg",
-        pitchers: ["데니 레예스", "아리엘 후라도", "원태인", "이승현", "최원태"]
+        pitchers: [
+            { name: "데니 레예스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54443.jpg", ERA: 4.14 },
+            { name: "아리엘 후라도", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/53375.jpg", ERA: 2.56 },
+            { name: "원태인", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/69446.jpg", ERA: 3.31 },
+            { name: "이승현", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51454.jpg", ERA: 4.75 },
+            { name: "최원태", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/65320.jpg", ERA: 4.59 }
+        ]
     },
     {
         name: "SSG Landers",
         logo: "../resources/teams/SSG Landers/logo.svg",
-        pitchers: ["김광현", "드루 앤더슨", "문승원", "미치 화이트", "박종훈"]
+        pitchers: [
+            { name: "김광현", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/77829.jpg", ERA: 4.41 },
+            { name: "드루 앤더슨", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54833.jpg", ERA: 2.21 },
+            { name: "문승원", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/62869.jpg", ERA: 4.74 },
+            { name: "미치 화이트", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55855.jpg", ERA: 2.84 },
+            { name: "박종훈", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/60841.jpg", ERA: 7.11 }
+        ]
     }
 ];
 
@@ -89,22 +139,53 @@ function updateTeamInfo(teamIdx, isHome) {
     }
 }
 
+
 function populatePitchers(selectElem, pitchers) {
     selectElem.innerHTML = '';
-    pitchers.forEach(p => {
+    pitchers.forEach((p, idx) => {
         const option = document.createElement('option');
-        option.value = p;
-        option.textContent = p;
+        option.value = idx;
+        option.textContent = p.name ? `${p.name} (ERA: ${p.ERA ?? '-'} )` : p;
         selectElem.appendChild(option);
     });
 }
 
+// 투수 정보 표시 영역 추가
+function showPitcherInfo(teamIdx, pitcherIdx, isHome) {
+    const team = teams[teamIdx];
+    const pitcher = team.pitchers[pitcherIdx];
+    const infoDivId = isHome ? 'home-pitcher-info' : 'away-pitcher-info';
+    let infoDiv = document.getElementById(infoDivId);
+    if (!infoDiv) {
+        infoDiv = document.createElement('div');
+        infoDiv.id = infoDivId;
+        infoDiv.className = 'pitcher-info';
+        (isHome ? homePitcherSelect : awayPitcherSelect).parentNode.appendChild(infoDiv);
+    }
+    if (pitcher && pitcher.img_url) {
+        infoDiv.innerHTML = `<img src="${pitcher.img_url}" alt="${pitcher.name}" class="pitcher-face"><br><b>${pitcher.name}</b><br>ERA: ${pitcher.ERA}`;
+    } else {
+        infoDiv.innerHTML = '';
+    }
+}
+
+
 homeTeamSelect.addEventListener('change', () => {
     updateTeamInfo(homeTeamSelect.value, true);
+    showPitcherInfo(homeTeamSelect.value, homePitcherSelect.selectedIndex, true);
 });
 
 awayTeamSelect.addEventListener('change', () => {
     updateTeamInfo(awayTeamSelect.value, false);
+    showPitcherInfo(awayTeamSelect.value, awayPitcherSelect.selectedIndex, false);
+});
+
+homePitcherSelect.addEventListener('change', () => {
+    showPitcherInfo(homeTeamSelect.value, homePitcherSelect.selectedIndex, true);
+});
+
+awayPitcherSelect.addEventListener('change', () => {
+    showPitcherInfo(awayTeamSelect.value, awayPitcherSelect.selectedIndex, false);
 });
 
 predictBtn.addEventListener('click', () => {
@@ -122,7 +203,10 @@ predictBtn.addEventListener('click', () => {
     resultDiv.innerHTML = `<b>${homeTeam.name}</b> (${homePitcher}) 승률: <span style="color:#2d7be5">${homeWinRate}%</span><br><b>${awayTeam.name}</b> (${awayPitcher}) 승률: <span style="color:#e52d2d">${awayWinRate}%</span>`;
 });
 
+
 // 초기화
 populateTeamSelects();
 updateTeamInfo(0, true);
 updateTeamInfo(1, false);
+showPitcherInfo(0, 0, true);
+showPitcherInfo(1, 0, false);

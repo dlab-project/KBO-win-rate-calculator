@@ -1,3 +1,18 @@
+# 투수 정보 영역
+.pitcher-info {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 1em;
+    color: #333;
+}
+.pitcher-face {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 1px solid #bbb;
+    margin-bottom: 4px;
+}
 body {
     font-family: 'Noto Sans KR', sans-serif;
     background: #f7f7f7;
