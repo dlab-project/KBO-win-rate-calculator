@@ -160,22 +160,14 @@
         <div class="query-section">
             <h2>데이터베이스 쿼리</h2>
             <div class="query-box">
-SELECT 
-    t.*,
-    bs.*,
-    fs.*,
-    ps.*,
-    ss.*
-FROM public.teams AS t
-JOIN public.kbo_team_baserunning_stats AS bs
-    ON t.idx = bs.team_idx
-JOIN public.kbo_team_fielding_stats AS fs
-    ON t.idx = fs.team_idx
-JOIN public.kbo_team_pitching_stats AS ps
-    ON t.idx = ps.team_idx
-JOIN public.kbo_team_stats AS ss
-    ON t.idx = ss.team_idx
-WHERE t.team_name = 'NC Dinos';
+-- 1. 팀 정보 조회
+SELECT * FROM public.teams WHERE team_name = 'NC Dinos';
+
+-- 2. 팀 ID를 사용해서 각 통계 테이블 조회
+SELECT * FROM public.kbo_team_baserunning_stats WHERE team_idx = 7;
+SELECT * FROM public.kbo_team_fielding_stats WHERE team_idx = 7;
+SELECT * FROM public.kbo_team_pitching_stats WHERE team_idx = 7;
+SELECT * FROM public.kbo_team_stats WHERE team_idx = 7;
             </div>
             
             <div class="team-selector">
@@ -240,22 +232,20 @@ WHERE t.team_name = 'NC Dinos';
             executeBtn.disabled = true;
 
             try {
-                // 먼저 팀 정보를 가져옵니다
+                // 먼저 팀 정보를 가져와서 team_idx를 확인합니다
                 const { data: teamData, error: teamError } = await supabase
                     .from('teams')
                     .select('*')
                     .eq('team_name', teamName)
                     .single();
 
-                if (teamError) {
-                    throw teamError;
-                }
-
-                if (!teamData) {
+                if (teamError || !teamData) {
                     throw new Error('선택한 팀의 데이터를 찾을 수 없습니다.');
                 }
 
-                // 각 통계 테이블에서 데이터를 가져옵니다
+                console.log('팀 데이터:', teamData);
+
+                // team_idx를 사용해서 각 통계 테이블에서 데이터를 가져옵니다
                 const [baserunningResult, fieldingResult, pitchingResult, statsResult] = await Promise.all([
                     supabase
                         .from('kbo_team_baserunning_stats')
@@ -278,6 +268,11 @@ WHERE t.team_name = 'NC Dinos';
                         .eq('team_idx', teamData.idx)
                         .single()
                 ]);
+
+                console.log('주루 통계 결과:', baserunningResult);
+                console.log('수비 통계 결과:', fieldingResult);
+                console.log('투수 통계 결과:', pitchingResult);
+                console.log('타격 통계 결과:', statsResult);
 
                 // 결과를 조합합니다
                 const combinedData = {
