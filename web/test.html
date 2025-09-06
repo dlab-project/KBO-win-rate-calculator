@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KBO 팀 통계 테스트</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .query-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .query-section h2 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .query-box {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .team-selector {
+            margin: 20px 0;
+        }
+        .team-selector label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #495057;
+        }
+        .team-selector select {
+            width: 200px;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .execute-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .execute-btn:hover {
+            background: #0056b3;
+        }
+        .execute-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .loading {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .result-section {
+            margin-top: 30px;
+        }
+        .result-section h2 {
+            color: #495057;
+            margin-bottom: 20px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .stat-card h3 {
+            margin-top: 0;
+            color: #495057;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        .stat-label {
+            font-weight: 500;
+            color: #6c757d;
+        }
+        .stat-value {
+            font-weight: bold;
+            color: #495057;
+        }
+        .raw-data {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .raw-data h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .raw-data pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>KBO 팀 통계 테스트 페이지</h1>
+        
+        <div class="query-section">
+            <h2>데이터베이스 쿼리</h2>
+            <div class="query-box">
+SELECT 
+    t.*,
+    bs.*,
+    fs.*,
+    ps.*,
+    ss.*
+FROM public.teams AS t
+JOIN public.kbo_team_baserunning_stats AS bs
+    ON t.idx = bs.team_idx
+JOIN public.kbo_team_fielding_stats AS fs
+    ON t.idx = fs.team_idx
+JOIN public.kbo_team_pitching_stats AS ps
+    ON t.idx = ps.team_idx
+JOIN public.kbo_team_stats AS ss
+    ON t.idx = ss.team_idx
+WHERE t.team_name = 'NC Dinos';
+            </div>
+            
+            <div class="team-selector">
+                <label for="team-select">팀 선택:</label>
+                <select id="team-select">
+                    <option value="LG Twins">LG Twins</option>
+                    <option value="Samsung Lions">Samsung Lions</option>
+                    <option value="Lotte Giants">Lotte Giants</option>
+                    <option value="Dosan Bears">Dosan Bears</option>
+                    <option value="KIA Tigers">KIA Tigers</option>
+                    <option value="Hanwha Eagles">Hanwha Eagles</option>
+                    <option value="NC Dinos" selected>NC Dinos</option>
+                    <option value="kt wiz">kt wiz</option>
+                    <option value="SSG Landers">SSG Landers</option>
+                    <option value="Kiwoom Heroes">Kiwoom Heroes</option>
+                </select>
+            </div>
+            
+            <button id="execute-btn" class="execute-btn">쿼리 실행</button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            데이터를 불러오는 중...
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="result-section" class="result-section" style="display: none;">
+            <h2>팀 통계 결과</h2>
+            <div id="stats-container"></div>
+            <div class="raw-data">
+                <h3>원본 데이터 (JSON)</h3>
+                <pre id="raw-data"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase 설정
+        const SUPABASE_URL = 'https://kktjuxbgudwqvbcfqfqs.supabase.co'
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrdGp1eGJndWR3cXZiY2ZxZnFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNDYyMjAsImV4cCI6MjA3MjcyMjIyMH0.EzNPhlJOUC2VV0aTCEoi-_j-50UcNQxKNR2brh04UOo"
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        const teamSelect = document.getElementById('team-select');
+        const executeBtn = document.getElementById('execute-btn');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const resultSection = document.getElementById('result-section');
+        const statsContainer = document.getElementById('stats-container');
+        const rawData = document.getElementById('raw-data');
+
+        executeBtn.addEventListener('click', async () => {
+            const selectedTeam = teamSelect.value;
+            await executeQuery(selectedTeam);
+        });
+
+        async function executeQuery(teamName) {
+            // UI 상태 초기화
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            resultSection.style.display = 'none';
+            executeBtn.disabled = true;
+
+            try {
+                // 먼저 팀 정보를 가져옵니다
+                const { data: teamData, error: teamError } = await supabase
+                    .from('teams')
+                    .select('*')
+                    .eq('team_name', teamName)
+                    .single();
+
+                if (teamError) {
+                    throw teamError;
+                }
+
+                if (!teamData) {
+                    throw new Error('선택한 팀의 데이터를 찾을 수 없습니다.');
+                }
+
+                // 각 통계 테이블에서 데이터를 가져옵니다
+                const [baserunningResult, fieldingResult, pitchingResult, statsResult] = await Promise.all([
+                    supabase
+                        .from('kbo_team_baserunning_stats')
+                        .select('*')
+                        .eq('team_idx', teamData.idx)
+                        .single(),
+                    supabase
+                        .from('kbo_team_fielding_stats')
+                        .select('*')
+                        .eq('team_idx', teamData.idx)
+                        .single(),
+                    supabase
+                        .from('kbo_team_pitching_stats')
+                        .select('*')
+                        .eq('team_idx', teamData.idx)
+                        .single(),
+                    supabase
+                        .from('kbo_team_stats')
+                        .select('*')
+                        .eq('team_idx', teamData.idx)
+                        .single()
+                ]);
+
+                // 결과를 조합합니다
+                const combinedData = {
+                    ...teamData,
+                    kbo_team_baserunning_stats: baserunningResult.data,
+                    kbo_team_fielding_stats: fieldingResult.data,
+                    kbo_team_pitching_stats: pitchingResult.data,
+                    kbo_team_stats: statsResult.data
+                };
+
+                // 에러가 있는지 확인합니다
+                const errors = [
+                    baserunningResult.error,
+                    fieldingResult.error,
+                    pitchingResult.error,
+                    statsResult.error
+                ].filter(err => err);
+
+                if (errors.length > 0) {
+                    console.warn('일부 통계 데이터를 가져오지 못했습니다:', errors);
+                }
+
+                displayResults(combinedData);
+
+            } catch (err) {
+                console.error('쿼리 실행 오류:', err);
+                error.textContent = `오류 발생: ${err.message}`;
+                error.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                executeBtn.disabled = false;
+            }
+        }
+
+        function displayResults(data) {
+            // 원본 데이터 표시
+            rawData.textContent = JSON.stringify(data, null, 2);
+
+            // 디버깅을 위한 콘솔 로그
+            console.log('전체 데이터:', data);
+            console.log('주루 통계:', data.kbo_team_baserunning_stats);
+            console.log('수비 통계:', data.kbo_team_fielding_stats);
+            console.log('투수 통계:', data.kbo_team_pitching_stats);
+            console.log('타격 통계:', data.kbo_team_stats);
+
+            // 통계 카드 생성
+            const statsHTML = `
+                <div class="stats-grid">
+                    ${createTeamInfoCard(data)}
+                    ${createBaserunningStatsCard(data.kbo_team_baserunning_stats)}
+                    ${createFieldingStatsCard(data.kbo_team_fielding_stats)}
+                    ${createPitchingStatsCard(data.kbo_team_pitching_stats)}
+                    ${createBattingStatsCard(data.kbo_team_stats)}
+                </div>
+            `;
+
+            statsContainer.innerHTML = statsHTML;
+            resultSection.style.display = 'block';
+        }
+
+        function createTeamInfoCard(data) {
+            return `
+                <div class="stat-card">
+                    <h3>팀 정보</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">팀명</span>
+                        <span class="stat-value">${data.team_name || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">팀 ID</span>
+                        <span class="stat-value">${data.idx || 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createBaserunningStatsCard(stats) {
+            console.log('주루 통계 카드 생성:', stats);
+            if (!stats) {
+                console.log('주루 통계 데이터가 없습니다');
+                return '<div class="stat-card"><h3>주루 통계</h3><p>데이터 없음</p></div>';
+            }
+            
+            return `
+                <div class="stat-card">
+                    <h3>주루 통계</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">게임 수</span>
+                        <span class="stat-value">${stats.game || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">도루 시도</span>
+                        <span class="stat-value">${stats.SBA || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">도루 성공</span>
+                        <span class="stat-value">${stats.SB || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">도루 실패</span>
+                        <span class="stat-value">${stats.CS || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">도루 성공률</span>
+                        <span class="stat-value">${stats.SBp || 'N/A'}%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">아웃</span>
+                        <span class="stat-value">${stats.OOB || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">피케이오</span>
+                        <span class="stat-value">${stats.PKO || 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createFieldingStatsCard(stats) {
+            if (!stats) return '<div class="stat-card"><h3>수비 통계</h3><p>데이터 없음</p></div>';
+            
+            return `
+                <div class="stat-card">
+                    <h3>수비 통계</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">실책</span>
+                        <span class="stat-value">${stats.E || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">피케이오</span>
+                        <span class="stat-value">${stats.PKO || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">포아웃</span>
+                        <span class="stat-value">${stats.PO || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">어시스트</span>
+                        <span class="stat-value">${stats.A || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">더블플레이</span>
+                        <span class="stat-value">${stats.DP || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">수비율</span>
+                        <span class="stat-value">${stats.FPCT || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">패스볼</span>
+                        <span class="stat-value">${stats.PB || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">도루 허용</span>
+                        <span class="stat-value">${stats.SB || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">도루 저지</span>
+                        <span class="stat-value">${stats.CS || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">도루 저지율</span>
+                        <span class="stat-value">${stats.CSp || 'N/A'}%</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createPitchingStatsCard(stats) {
+            if (!stats) return '<div class="stat-card"><h3>투수 통계</h3><p>데이터 없음</p></div>';
+            
+            return `
+                <div class="stat-card">
+                    <h3>투수 통계</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">평균자책점</span>
+                        <span class="stat-value">${stats.ERA || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">게임 수</span>
+                        <span class="stat-value">${stats.G || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">승</span>
+                        <span class="stat-value">${stats.W || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">패</span>
+                        <span class="stat-value">${stats.L || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">세이브</span>
+                        <span class="stat-value">${stats.SV || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">홀드</span>
+                        <span class="stat-value">${stats.HLD || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">승률</span>
+                        <span class="stat-value">${stats.WPCT || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">이닝</span>
+                        <span class="stat-value">${stats.IP || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">피안타</span>
+                        <span class="stat-value">${stats.H || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">피홈런</span>
+                        <span class="stat-value">${stats.HR || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">볼넷</span>
+                        <span class="stat-value">${stats.BB || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">사구</span>
+                        <span class="stat-value">${stats.HBP || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">삼진</span>
+                        <span class="stat-value">${stats.SO || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">실점</span>
+                        <span class="stat-value">${stats.R || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">자책점</span>
+                        <span class="stat-value">${stats.ER || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">WHIP</span>
+                        <span class="stat-value">${stats.WHIP || 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createBattingStatsCard(stats) {
+            if (!stats) return '<div class="stat-card"><h3>타격 통계</h3><p>데이터 없음</p></div>';
+            
+            return `
+                <div class="stat-card">
+                    <h3>타격 통계</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">타율</span>
+                        <span class="stat-value">${stats.AVG || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">게임 수</span>
+                        <span class="stat-value">${stats.G || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">타석</span>
+                        <span class="stat-value">${stats.PA || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">타수</span>
+                        <span class="stat-value">${stats.AB || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">득점</span>
+                        <span class="stat-value">${stats.R || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">안타</span>
+                        <span class="stat-value">${stats.H || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">2루타</span>
+                        <span class="stat-value">${stats['2B'] || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">3루타</span>
+                        <span class="stat-value">${stats['3B'] || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">홈런</span>
+                        <span class="stat-value">${stats.HR || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">총 루타</span>
+                        <span class="stat-value">${stats.TB || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">타점</span>
+                        <span class="stat-value">${stats.RBI || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">희생번트</span>
+                        <span class="stat-value">${stats.SAC || 'N/A'}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">희생플라이</span>
+                        <span class="stat-value">${stats.SF || 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 페이지 로드 시 기본 쿼리 실행
+        window.addEventListener('load', () => {
+            executeQuery('NC Dinos');
+        });
+    </script>
+</body>
+</html>
