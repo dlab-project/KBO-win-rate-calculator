@@ -1,0 +1,72 @@
+// ------------------- 카테고리 가중치 -------------------
+const CAT_WEIGHTS = {
+  batting: 0.35,
+  pitching: 0.40,
+  fielding: 0.20,
+  baserunning: 0.05
+};
+
+// ------------------- 세부 지표 가중치 -------------------
+const BAT_WEIGHTS = { AVG: 0.050, PA: 0.020, AB: 0.020, R: 0.200, H: 0.130, '2B': 0.040, '3B': 0.030, HR: 0.100, TB: 0.100, RBI: 0.200, SAC: 0.050, SF: 0.060 };
+const PIT_WEIGHTS = { ERA: 0.080, starter_ERA: 0.05, W: 0.100, L: 0.050, SV: 0.080, HLD: 0.050, WHIP: 0.150, IP: 0.100, H: 0.030, HR: 0.020, BB: 0.020, HBP: 0.020, SO: 0.120, R: 0.040, ER: 0.040 };
+const FIE_WEIGHTS = { E: 0.200, PK: 0.100, PO: 0.100, A: 0.100, DP: 0.100, FPCT: 0.200, PB: 0.050, SB: 0.050, CS: 0.050, 'CS%': 0.050 };
+const BAS_WEIGHTS = { SBA: 0.050, SB: 0.250, CS: 0.100, 'SB%': 0.200, OOB: 0.250, PKO: 0.150 };
+
+// ------------------- 방향성 정의 -------------------
+const LOWER_BETTER = {
+  batting: [],
+  pitching: ['ERA', 'WHIP', 'H', 'HR', 'BB', 'HBP', 'R', 'ER', 'L'],
+  fielding: ['E', 'PB', 'SB'],
+  baserunning: ['CS', 'OOB', 'PKO']
+};
+
+// ------------------- Helper -------------------
+function zScore(val, arr, lowerBetter = false) {
+  if (val == null || isNaN(val)) return 0;
+  const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+  const std = Math.sqrt(arr.map(x => (x - mean) ** 2).reduce((a, b) => a + b, 0) / arr.length) || 1;
+  let z = (val - mean) / std;
+  z = Math.max(-3, Math.min(3, z));
+  return lowerBetter ? -z : z;
+}
+
+function categoryScore(stats, weights, lowerBetterKeys) {
+  let score = 0;
+  for (const key in weights) {
+    const val = stats[key];
+    const arr = [val]; // ⚠️ 실제로는 리그 전체 평균 필요 (여기선 단순화)
+    const z = zScore(val, arr, lowerBetterKeys.includes(key));
+    score += (weights[key] || 0) * z;
+  }
+  return score;
+}
+
+function totalScore(teamStats, starterERA) {
+  const bat = categoryScore(teamStats.batting, BAT_WEIGHTS, LOWER_BETTER.batting);
+  const pit = categoryScore(teamStats.pitching, { ...PIT_WEIGHTS, ERA: PIT_WEIGHTS.ERA - 0.05 }, LOWER_BETTER.pitching);
+  const starterEraScore = PIT_WEIGHTS.starter_ERA * zScore(starterERA, [starterERA], true);
+  const fie = categoryScore(teamStats.fielding, FIE_WEIGHTS, LOWER_BETTER.fielding);
+  const bas = categoryScore(teamStats.baserunning, BAS_WEIGHTS, LOWER_BETTER.baserunning);
+
+  return CAT_WEIGHTS.batting * bat +
+         CAT_WEIGHTS.pitching * (pit + starterEraScore) +
+         CAT_WEIGHTS.fielding * fie +
+         CAT_WEIGHTS.baserunning * bas;
+}
+
+function softmax(a, b, tau = 1) {
+  const ea = Math.exp(a / tau);
+  const eb = Math.exp(b / tau);
+  return ea / (ea + eb);
+}
+
+// ------------------- 메인 함수 -------------------
+function calculateWinProbability(homeStats, awayStats, homePitcherERA, awayPitcherERA) {
+  const homeScore = totalScore(homeStats, homePitcherERA);
+  const awayScore = totalScore(awayStats, awayPitcherERA);
+
+  let homeProb = softmax(homeScore, awayScore);
+  let awayProb = 1 - homeProb;
+
+  return { homeProb, awayProb };
+}s
