@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KBO 팀 통계 테스트</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="database.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -206,11 +207,7 @@ SELECT * FROM public.kbo_team_stats WHERE team_idx = 7;
     </div>
 
     <script>
-        // Supabase 설정
-        const SUPABASE_URL = 'https://kktjuxbgudwqvbcfqfqs.supabase.co'
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrdGp1eGJndWR3cXZiY2ZxZnFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNDYyMjAsImV4cCI6MjA3MjcyMjIyMH0.EzNPhlJOUC2VV0aTCEoi-_j-50UcNQxKNR2brh04UOo"
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
+        // DOM 요소 참조
         const teamSelect = document.getElementById('team-select');
         const executeBtn = document.getElementById('execute-btn');
         const loading = document.getElementById('loading');
@@ -232,69 +229,8 @@ SELECT * FROM public.kbo_team_stats WHERE team_idx = 7;
             executeBtn.disabled = true;
 
             try {
-                // 먼저 팀 정보를 가져와서 team_idx를 확인합니다
-                const { data: teamData, error: teamError } = await supabase
-                    .from('teams')
-                    .select('*')
-                    .eq('team_name', teamName)
-                    .single();
-
-                if (teamError || !teamData) {
-                    throw new Error('선택한 팀의 데이터를 찾을 수 없습니다.');
-                }
-
-                console.log('팀 데이터:', teamData);
-
-                // team_idx를 사용해서 각 통계 테이블에서 데이터를 가져옵니다
-                const [baserunningResult, fieldingResult, pitchingResult, statsResult] = await Promise.all([
-                    supabase
-                        .from('kbo_team_baserunning_stats')
-                        .select('*')
-                        .eq('team_idx', teamData.idx)
-                        .single(),
-                    supabase
-                        .from('kbo_team_fielding_stats')
-                        .select('*')
-                        .eq('team_idx', teamData.idx)
-                        .single(),
-                    supabase
-                        .from('kbo_team_pitching_stats')
-                        .select('*')
-                        .eq('team_idx', teamData.idx)
-                        .single(),
-                    supabase
-                        .from('kbo_team_stats')
-                        .select('*')
-                        .eq('team_idx', teamData.idx)
-                        .single()
-                ]);
-
-                console.log('주루 통계 결과:', baserunningResult);
-                console.log('수비 통계 결과:', fieldingResult);
-                console.log('투수 통계 결과:', pitchingResult);
-                console.log('타격 통계 결과:', statsResult);
-
-                // 결과를 조합합니다
-                const combinedData = {
-                    ...teamData,
-                    kbo_team_baserunning_stats: baserunningResult.data,
-                    kbo_team_fielding_stats: fieldingResult.data,
-                    kbo_team_pitching_stats: pitchingResult.data,
-                    kbo_team_stats: statsResult.data
-                };
-
-                // 에러가 있는지 확인합니다
-                const errors = [
-                    baserunningResult.error,
-                    fieldingResult.error,
-                    pitchingResult.error,
-                    statsResult.error
-                ].filter(err => err);
-
-                if (errors.length > 0) {
-                    console.warn('일부 통계 데이터를 가져오지 못했습니다:', errors);
-                }
-
+                // database.js의 getTeamStats 함수 사용
+                const combinedData = await getTeamStats(teamName);
                 displayResults(combinedData);
 
             } catch (err) {
@@ -310,13 +246,6 @@ SELECT * FROM public.kbo_team_stats WHERE team_idx = 7;
         function displayResults(data) {
             // 원본 데이터 표시
             rawData.textContent = JSON.stringify(data, null, 2);
-
-            // 디버깅을 위한 콘솔 로그
-            console.log('전체 데이터:', data);
-            console.log('주루 통계:', data.kbo_team_baserunning_stats);
-            console.log('수비 통계:', data.kbo_team_fielding_stats);
-            console.log('투수 통계:', data.kbo_team_pitching_stats);
-            console.log('타격 통계:', data.kbo_team_stats);
 
             // 통계 카드 생성
             const statsHTML = `
@@ -350,9 +279,7 @@ SELECT * FROM public.kbo_team_stats WHERE team_idx = 7;
         }
 
         function createBaserunningStatsCard(stats) {
-            console.log('주루 통계 카드 생성:', stats);
             if (!stats) {
-                console.log('주루 통계 데이터가 없습니다');
                 return '<div class="stat-card"><h3>주루 통계</h3><p>데이터 없음</p></div>';
             }
             
