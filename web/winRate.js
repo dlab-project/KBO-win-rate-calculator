@@ -30,23 +30,23 @@ function zScore(val, arr, lowerBetter = false) {
   return lowerBetter ? -z : z;
 }
 
-function categoryScore(stats, weights, lowerBetterKeys) {
+function categoryScore(stats, weights, lowerBetterKeys, leagueStats) {
   let score = 0;
   for (const key in weights) {
     const val = stats[key];
-    const arr = [val]; // ⚠️ 실제로는 리그 전체 평균 필요 (여기선 단순화)
+    const arr = leagueStats ? leagueStats.map(s => s[key]).filter(v => v != null && !isNaN(v)) : [val];
     const z = zScore(val, arr, lowerBetterKeys.includes(key));
     score += (weights[key] || 0) * z;
   }
   return score;
 }
 
-function totalScore(teamStats, starterERA) {
-  const bat = categoryScore(teamStats.batting, BAT_WEIGHTS, LOWER_BETTER.batting);
-  const pit = categoryScore(teamStats.pitching, { ...PIT_WEIGHTS, ERA: PIT_WEIGHTS.ERA - 0.05 }, LOWER_BETTER.pitching);
-  const starterEraScore = PIT_WEIGHTS.starter_ERA * zScore(starterERA, [starterERA], true);
-  const fie = categoryScore(teamStats.fielding, FIE_WEIGHTS, LOWER_BETTER.fielding);
-  const bas = categoryScore(teamStats.baserunning, BAS_WEIGHTS, LOWER_BETTER.baserunning);
+function totalScore(teamStats, starterERA, leagueStats, starterERAs) {
+  const bat = categoryScore(teamStats.batting, BAT_WEIGHTS, LOWER_BETTER.batting, leagueStats?.map(s => s.batting));
+  const pit = categoryScore(teamStats.pitching, { ...PIT_WEIGHTS, ERA: PIT_WEIGHTS.ERA - 0.05 }, LOWER_BETTER.pitching, leagueStats?.map(s => s.pitching));
+  const starterEraScore = PIT_WEIGHTS.starter_ERA * zScore(starterERA, starterERAs || [starterERA], true);
+  const fie = categoryScore(teamStats.fielding, FIE_WEIGHTS, LOWER_BETTER.fielding, leagueStats?.map(s => s.fielding));
+  const bas = categoryScore(teamStats.baserunning, BAS_WEIGHTS, LOWER_BETTER.baserunning, leagueStats?.map(s => s.baserunning));
 
   return CAT_WEIGHTS.batting * bat +
          CAT_WEIGHTS.pitching * (pit + starterEraScore) +
@@ -61,9 +61,9 @@ function softmax(a, b, tau = 1) {
 }
 
 // ------------------- 메인 함수 -------------------
-function calculateWinProbability(homeStats, awayStats, homePitcherERA, awayPitcherERA) {
-  const homeScore = totalScore(homeStats, homePitcherERA);
-  const awayScore = totalScore(awayStats, awayPitcherERA);
+function calculateWinProbability(homeStats, awayStats, homePitcherERA, awayPitcherERA, leagueStats, starterERAs) {
+  const homeScore = totalScore(homeStats, homePitcherERA, leagueStats, starterERAs);
+  const awayScore = totalScore(awayStats, awayPitcherERA, leagueStats, starterERAs);
 
   let homeProb = softmax(homeScore, awayScore);
   let awayProb = 1 - homeProb;

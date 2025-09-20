@@ -299,22 +299,33 @@ predictBtn.addEventListener('click', async () => {
     resultDiv.textContent = '승률을 계산 중입니다...';
 
     try {
-        // 두 팀의 스탯을 병렬로 가져오기
-        const [homeStatsData, awayStatsData] = await Promise.all([
-            getTeamStatsCached(homeTeam.team_name),
-            getTeamStatsCached(awayTeam.team_name)
-        ]);
+        // 모든 팀의 스탯을 가져오기 (리그 평균 계산용)
+        const allTeamStatsPromises = teams.map(team => getTeamStatsCached(team.team_name));
+        const allTeamStatsData = await Promise.all(allTeamStatsPromises);
 
-        // 승률 계산에 필요한 형태로 변환
-        const homeStats = convertStatsForWinRate(homeStatsData);
-        const awayStats = convertStatsForWinRate(awayStatsData);
+        // 리그 전체 스탯을 변환
+        const leagueStats = allTeamStatsData.map(teamData => convertStatsForWinRate(teamData));
+
+        // 선발 투수 ERA 리스트 생성
+        const starterERAs = [];
+        Object.values(pitchers).forEach(teamPitchers => {
+            teamPitchers.forEach(pitcher => {
+                if (pitcher.ERA && !isNaN(pitcher.ERA)) {
+                    starterERAs.push(pitcher.ERA);
+                }
+            });
+        });
+
+        // 두 팀의 스탯을 변환
+        const homeStats = leagueStats[homeTeamSelect.value];
+        const awayStats = leagueStats[awayTeamSelect.value];
 
         // 투수 ERA 가져오기
         const homePitcherERA = homeTeam.pitchers[homePitcherIdx].ERA;
         const awayPitcherERA = awayTeam.pitchers[awayPitcherIdx].ERA;
 
         // 승률 계산
-        const { homeProb, awayProb } = calculateWinProbability(homeStats, awayStats, homePitcherERA, awayPitcherERA);
+        const { homeProb, awayProb } = calculateWinProbability(homeStats, awayStats, homePitcherERA, awayPitcherERA, leagueStats, starterERAs);
 
         // 결과 표시
         const homeWinRate = (homeProb * 100).toFixed(1);
