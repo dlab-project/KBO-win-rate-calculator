@@ -91,16 +91,17 @@ async function loadTeams() {
         teams = teamList.map(team => {
             // 팀 이름 매핑 (데이터베이스 이름 -> 투수 데이터 키)
             const teamNameMapping = {
-                'Doosan Bears': 'Dosan Bears',
-                'kt Wiz': 'kt wiz',
-                // 다른 팀들은 동일
+                'kt wiz': 'kt wiz',
+                // DB의 'Dosan Bears'는 투수 데이터에서 'Dosan Bears'로 동일하므로 매핑 불필요
+                // 다른 팀들도 대부분 동일
             };
-            
+
             const pitcherKey = teamNameMapping[team.team_name] || team.team_name;
-            
+            const logoFolderName = teamNameMapping[team.team_name] || team.team_name;
+
             return {
                 ...team,
-                logo: `../resources/teams/${team.team_name}/logo.svg`,
+                logo: `../resources/teams/${encodeURIComponent(logoFolderName)}/logo.svg`,
                 pitchers: pitchers[pitcherKey] || []
             };
         });
