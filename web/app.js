@@ -399,22 +399,18 @@ predictBtn.addEventListener('click', async () => {
         resultDiv.innerHTML = `
             <div class="prediction-result">
                 <h3>🏆 예측 결과</h3>
-                <div class="winrate-bar-container" style="margin-bottom:10px;">
-                    <div class="winrate-bar" style="display:flex; height:38px; border-radius:19px; overflow:hidden; border:1.5px solid #d1d5db; background:#f3f4f6;">
-                        <div style="background:#667eea; color:#fff; display:flex; align-items:center; justify-content:center; width:${homeProb*100}%; font-weight:600; font-size:1.08em; transition:width 0.5s;">
-                            ${homeWinRate}%
-                        </div>
-                        <div style="background:#764ba2; color:#fff; display:flex; align-items:center; justify-content:center; width:${awayProb*100}%; font-weight:600; font-size:1.08em; transition:width 0.5s;">
-                            ${awayWinRate}%
-                        </div>
+                <div class="winrate-bar-container">
+                    <div class="winrate-bar">
+                        <div style="width:${homeProb*100}%">${homeWinRate}%</div>
+                        <div style="width:${awayProb*100}%">${awayWinRate}%</div>
                     </div>
                 </div>
-                <div style="display:flex; justify-content:space-between; font-size:1em; color:#495057; margin:0 6px 18px 6px;">
+                <div class="winrate-bar-labels">
                     <span>${homeTeam.team_name}</span>
                     <span>${awayTeam.team_name}</span>
                 </div>
                 <div style="margin-top: 20px; font-size: 0.9rem; color: #666;">
-                    💡 팀 성적, 투수 능력, 홈/원정 어드밴티지, 등을 종합 분석한 결과입니다
+                    💡 팀 성적, 투수 능력, 홈/원정 어드밴티지를 종합 분석한 결과입니다
                 </div>
             </div>
         `;
