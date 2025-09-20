@@ -69,4 +69,4 @@ function calculateWinProbability(homeStats, awayStats, homePitcherERA, awayPitch
   let awayProb = 1 - homeProb;
 
   return { homeProb, awayProb };
-}s
+}

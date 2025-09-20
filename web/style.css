@@ -93,3 +93,40 @@ button:hover {
     color: #333;
     min-height: 32px;
 }
+
+/* 예측 결과 스타일 */
+.prediction-result {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 16px;
+}
+
+.prediction-result h3 {
+    margin: 0 0 16px 0;
+    color: #495057;
+    font-size: 1.3em;
+}
+
+.team-prediction {
+    margin: 12px 0;
+    padding: 12px;
+    background: #fff;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+.vs-text {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #6c757d;
+    margin: 8px 0;
+}
+
+.win-rate {
+    font-size: 1.4em;
+    font-weight: bold;
+    display: block;
+    margin-top: 8px;
+}
