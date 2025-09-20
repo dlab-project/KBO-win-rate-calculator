@@ -265,9 +265,11 @@ function updateTeamInfo(teamIdx, isHome) {
     const team = teams[teamIdx];
     if (isHome) {
         homeLogo.src = team.logo;
+        document.getElementById('home-team-name').textContent = team.team_name;
         populatePitchers(homePitcherSelect, team.pitchers);
     } else {
         awayLogo.src = team.logo;
+        document.getElementById('away-team-name').textContent = team.team_name;
         populatePitchers(awayPitcherSelect, team.pitchers);
     }
 }
@@ -328,14 +330,34 @@ predictBtn.addEventListener('click', async () => {
     const awayPitcherIdx = awayPitcherSelect.value;
     const homePitcher = homeTeam.pitchers[homePitcherIdx]?.name || '';
     const awayPitcher = awayTeam.pitchers[awayPitcherIdx]?.name || '';
-    
+
     if (!homePitcher || !awayPitcher) {
-        resultDiv.textContent = '선발 투수를 모두 선택해주세요.';
+        resultDiv.innerHTML = `
+            <div class="loading-message" style="color: #e74c3c;">
+                ⚠️ 선발 투수를 모두 선택해주세요
+            </div>
+        `;
         return;
     }
 
-    // 로딩 표시
-    resultDiv.textContent = '승률을 계산 중입니다...';
+    // 버튼 비활성화 및 로딩 상태로 변경
+    const buttonText = predictBtn.querySelector('.button-text');
+    const loadingSpinner = predictBtn.querySelector('.loading-spinner');
+
+    predictBtn.disabled = true;
+    buttonText.textContent = '분석 중...';
+    loadingSpinner.style.display = 'block';
+
+    // 로딩 메시지 표시
+    resultDiv.innerHTML = `
+        <div class="loading-message">
+            🤖 AI가 경기 데이터를 분석하고 있습니다...<br>
+            <small>팀 성적, 투수 능력, 최근 폼 등을 종합적으로 검토 중</small>
+        </div>
+    `;
+
+    // 3-5초 랜덤 딜레이
+    const randomDelay = Math.random() * 2000 + 3000; // 3000ms ~ 5000ms
 
     try {
         // 모든 팀의 스탯을 가져오기 (리그 평균 계산용)
@@ -363,56 +385,70 @@ predictBtn.addEventListener('click', async () => {
         const homePitcherERA = homeTeam.pitchers[homePitcherIdx].ERA;
         const awayPitcherERA = awayTeam.pitchers[awayPitcherIdx].ERA;
 
-        // 디버깅: 변환된 스탯 확인
-        console.log('홈팀 변환된 스탯:', homeStats);
-        console.log('어웨이팀 변환된 스탯:', awayStats);
-        console.log('선발 투수 ERA 풀:', starterERAs.slice(0, 10), '...(총', starterERAs.length, '명)');
-
         // 승률 계산
         const { homeProb, awayProb } = calculateWinProbability(homeStats, awayStats, homePitcherERA, awayPitcherERA, leagueStats, starterERAs);
 
-        // 디버깅: 계산 결과 확인
-        console.log('홈팀 승률:', homeProb, '어웨이팀 승률:', awayProb);
+        // 랜덤 딜레이 적용
+        await new Promise(resolve => setTimeout(resolve, randomDelay));
 
         // 결과 표시
         const homeWinRate = (homeProb * 100).toFixed(1);
         const awayWinRate = (awayProb * 100).toFixed(1);
-        
+
         resultDiv.innerHTML = `
             <div class="prediction-result">
-                <h3>예측 결과</h3>
-                <div class="team-prediction">
-                    <strong>${homeTeam.team_name}</strong> (${homePitcher})<br>
-                    <span class="win-rate" style="color:#2d7be5">승률: ${homeWinRate}%</span>
+                <h3>🏆 예측 결과</h3>
+                <div class="prediction-grid">
+                    <div class="team-prediction">
+                        <strong>${homeTeam.team_name}</strong><br>
+                        <small>홈팀 • ${homePitcher}</small>
+                        <div class="win-rate" style="color:#667eea">${homeWinRate}%</div>
+                    </div>
+                    <div class="vs-text">VS</div>
+                    <div class="team-prediction">
+                        <strong>${awayTeam.team_name}</strong><br>
+                        <small>원정팀 • ${awayPitcher}</small>
+                        <div class="win-rate" style="color:#764ba2">${awayWinRate}%</div>
+                    </div>
                 </div>
-                <div class="vs-text">VS</div>
-                <div class="team-prediction">
-                    <strong>${awayTeam.team_name}</strong> (${awayPitcher})<br>
-                    <span class="win-rate" style="color:#e52d2d">승률: ${awayWinRate}%</span>
+                <div style="margin-top: 20px; font-size: 0.9rem; color: #666;">
+                    💡 팀 성적, 투수 능력, 홈/원정 어드밴티지를 종합 분석한 결과입니다
                 </div>
             </div>
         `;
+
     } catch (error) {
         console.error('승률 계산 오류:', error);
-        resultDiv.textContent = `승률 계산 중 오류가 발생했습니다: ${error.message}`;
+        resultDiv.innerHTML = `
+            <div class="loading-message" style="color: #e74c3c;">
+                ❌ 승률 계산 중 오류가 발생했습니다<br>
+                <small>${error.message}</small>
+            </div>
+        `;
+    } finally {
+        // 버튼 상태 복원
+        predictBtn.disabled = false;
+        buttonText.textContent = '승률 예측하기';
+        loadingSpinner.style.display = 'none';
     }
 });
 
 // 초기화
 async function initialize() {
-    console.log('초기화 시작...');
     await loadTeams();
-    console.log('로드된 팀 수:', teams.length);
     if (teams.length > 0) {
-        console.log('팀 목록:', teams.map(t => t.team_name));
         populateTeamSelects();
         updateTeamInfo(0, true);
         updateTeamInfo(1, false);
         showPitcherInfo(0, 0, true);
         showPitcherInfo(1, 0, false);
     } else {
-        console.error('팀 데이터가 로드되지 않았습니다.');
-        resultDiv.textContent = '팀 데이터를 불러올 수 없습니다. 페이지를 새로고침해주세요.';
+        resultDiv.innerHTML = `
+            <div class="loading-message" style="color: #e74c3c;">
+                ❌ 팀 데이터를 불러올 수 없습니다<br>
+                <small>페이지를 새로고침하거나 잠시 후 다시 시도해주세요</small>
+            </div>
+        `;
     }
 }
 

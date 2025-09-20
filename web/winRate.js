@@ -58,9 +58,6 @@ function totalScore(teamStats, starterERA, leagueStats, starterERAs) {
                      CAT_WEIGHTS.fielding * fie +
                      CAT_WEIGHTS.baserunning * bas;
 
-  // 디버깅 로그
-  console.log('카테고리 점수 - batting:', bat, 'pitching:', pit, 'starterERA:', starterEraScore, 'fielding:', fie, 'baserunning:', bas);
-  console.log('최종 점수:', totalScore);
 
   return totalScore;
 }

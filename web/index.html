@@ -5,34 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KBO 승률 예측기</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>KBO 승률 예측기</h1>
-        <div class="teams">
-            <div class="team" id="home-team">
-                <h2>홈팀</h2>
-                <img id="home-logo" src="" alt="홈팀 로고" class="team-logo">
-                <select id="home-pitcher"></select>
-            </div>
-            <div class="vs">VS</div>
-            <div class="team" id="away-team">
-                <h2>어웨이팀</h2>
-                <img id="away-logo" src="" alt="어웨이팀 로고" class="team-logo">
-                <select id="away-pitcher"></select>
-            </div>
-        </div>
-        <div class="team-selectors">
-            <label>홈팀:
-                <select id="home-team-select"></select>
-            </label>
-            <label>어웨이팀:
-                <select id="away-team-select"></select>
-            </label>
-        </div>
-        <button id="predict-btn">예측 하기</button>
-        <div id="result"></div>
+        <header class="app-header">
+            <h1 class="app-title">⚾ KBO 승률 예측기</h1>
+            <p class="app-subtitle">AI 기반 야구 경기 승률 분석 시스템</p>
+        </header>
+
+        <main class="app-main">
+            <!-- 팀 선택 섹션 -->
+            <section class="team-selection">
+                <div class="selector-group">
+                    <div class="input-group">
+                        <label for="home-team-select" class="input-label">홈팀</label>
+                        <select id="home-team-select" class="team-select"></select>
+                    </div>
+                    <div class="vs-divider">VS</div>
+                    <div class="input-group">
+                        <label for="away-team-select" class="input-label">어웨이팀</label>
+                        <select id="away-team-select" class="team-select"></select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 팀 정보 표시 섹션 -->
+            <section class="teams-display">
+                <div class="team-card" id="home-team-card">
+                    <div class="team-header">
+                        <img id="home-logo" src="" alt="홈팀 로고" class="team-logo">
+                        <h3 class="team-name" id="home-team-name">팀 선택</h3>
+                    </div>
+                    <div class="pitcher-section">
+                        <label for="home-pitcher" class="pitcher-label">선발 투수</label>
+                        <select id="home-pitcher" class="pitcher-select"></select>
+                        <div id="home-pitcher-info" class="pitcher-info"></div>
+                    </div>
+                </div>
+
+                <div class="team-card" id="away-team-card">
+                    <div class="team-header">
+                        <img id="away-logo" src="" alt="어웨이팀 로고" class="team-logo">
+                        <h3 class="team-name" id="away-team-name">팀 선택</h3>
+                    </div>
+                    <div class="pitcher-section">
+                        <label for="away-pitcher" class="pitcher-label">선발 투수</label>
+                        <select id="away-pitcher" class="pitcher-select"></select>
+                        <div id="away-pitcher-info" class="pitcher-info"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 예측 버튼 -->
+            <section class="prediction-section">
+                <button id="predict-btn" class="predict-button">
+                    <span class="button-text">승률 예측하기</span>
+                    <div class="loading-spinner" style="display: none;"></div>
+                </button>
+            </section>
+
+            <!-- 결과 표시 -->
+            <section class="result-section">
+                <div id="result" class="result-container"></div>
+            </section>
+        </main>
     </div>
+
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="database.js"></script>
     <script src="winRate.js"></script>
