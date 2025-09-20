@@ -4,7 +4,7 @@ let teamStatsCache = new Map(); // 팀 스탯 캐시
 
 // 투수 데이터 (임시로 하드코딩, 나중에 데이터베이스에서 가져올 수 있음)
 const pitchers = {
-    "Dosan Bears": [
+    "Doosan Bears": [
         { name: "곽빈", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/68220.jpg", ERA: 4.16 },
         { name: "잭 로그", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55239.jpg", ERA: 3.23 },
         { name: "최승용", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51264.jpg", ERA: 4.05 },
@@ -92,7 +92,7 @@ async function loadTeams() {
             // 팀 이름 매핑 (데이터베이스 이름 -> 투수 데이터 키)
             const teamNameMapping = {
                 'kt wiz': 'kt wiz',
-                // DB의 'Dosan Bears'는 투수 데이터에서 'Dosan Bears'로 동일하므로 매핑 불필요
+                // DB의 'Doosan Bears'는 투수 데이터에서 'Doosan Bears'로 동일하므로 매핑 불필요
                 // 다른 팀들도 대부분 동일
             };
 
@@ -399,21 +399,22 @@ predictBtn.addEventListener('click', async () => {
         resultDiv.innerHTML = `
             <div class="prediction-result">
                 <h3>🏆 예측 결과</h3>
-                <div class="prediction-grid">
-                    <div class="team-prediction">
-                        <strong>${homeTeam.team_name}</strong><br>
-                        <small>홈팀 • ${homePitcher}</small>
-                        <div class="win-rate" style="color:#667eea">${homeWinRate}%</div>
-                    </div>
-                    <div class="vs-text">VS</div>
-                    <div class="team-prediction">
-                        <strong>${awayTeam.team_name}</strong><br>
-                        <small>원정팀 • ${awayPitcher}</small>
-                        <div class="win-rate" style="color:#764ba2">${awayWinRate}%</div>
+                <div class="winrate-bar-container" style="margin-bottom:10px;">
+                    <div class="winrate-bar" style="display:flex; height:38px; border-radius:19px; overflow:hidden; border:1.5px solid #d1d5db; background:#f3f4f6;">
+                        <div style="background:#667eea; color:#fff; display:flex; align-items:center; justify-content:center; width:${homeProb*100}%; font-weight:600; font-size:1.08em; transition:width 0.5s;">
+                            ${homeWinRate}%
+                        </div>
+                        <div style="background:#764ba2; color:#fff; display:flex; align-items:center; justify-content:center; width:${awayProb*100}%; font-weight:600; font-size:1.08em; transition:width 0.5s;">
+                            ${awayWinRate}%
+                        </div>
                     </div>
                 </div>
+                <div style="display:flex; justify-content:space-between; font-size:1em; color:#495057; margin:0 6px 18px 6px;">
+                    <span>${homeTeam.team_name}</span>
+                    <span>${awayTeam.team_name}</span>
+                </div>
                 <div style="margin-top: 20px; font-size: 0.9rem; color: #666;">
-                    💡 팀 성적, 투수 능력, 홈/원정 어드밴티지를 종합 분석한 결과입니다
+                    💡 팀 성적, 투수 능력, 홈/원정 어드밴티지, 등을 종합 분석한 결과입니다
                 </div>
             </div>
         `;
