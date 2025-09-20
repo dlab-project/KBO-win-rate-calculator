@@ -127,7 +127,31 @@ async function getTeamStatsCached(teamName) {
     }
 }
 
-// 팀 스탯을 승률 계산에 필요한 형태로 변환하는 함수
+// IP 문자열을 소수점으로 변환하는 함수 ("1091 2/3" → 1091.67)
+function parseIP(ipString) {
+    if (!ipString) return 0;
+    const str = ipString.toString().trim();
+
+    // "1091 2/3" 형태 처리
+    const match = str.match(/^(\d+)(?:\s+(\d+)\/(\d+))?$/);
+    if (match) {
+        const base = parseInt(match[1]) || 0;
+        const numerator = parseInt(match[2]) || 0;
+        const denominator = parseInt(match[3]) || 1;
+        return base + (numerator / denominator);
+    }
+
+    // 일반 숫자로 파싱 시도
+    return parseFloat(str) || 0;
+}
+
+// 퍼센트 값 정규화 (>1이면 100으로 나누기)
+function normalizePercentage(value) {
+    const num = parseFloat(value) || 0;
+    return num > 1 ? num / 100 : num;
+}
+
+// 팀 스탯을 승률 계산에 필요한 형태로 변환하는 함수 (text.txt 공식 적용)
 function convertStatsForWinRate(teamStats) {
     if (!teamStats || !teamStats.kbo_team_stats) {
         throw new Error('팀 스탯 데이터가 없습니다.');
@@ -138,56 +162,71 @@ function convertStatsForWinRate(teamStats) {
     const fielding = teamStats.kbo_team_fielding_stats || {};
     const baserunning = teamStats.kbo_team_baserunning_stats || {};
 
+    // 경기수
+    const battingGames = parseInt(stats.G) || 1;
+    const pitchingGames = parseInt(pitching.G) || 1;
+    const baserunningGames = parseInt(baserunning.game) || 1;
+
     return {
         batting: {
+            // AVG는 이미 비율이므로 그대로 사용
             AVG: parseFloat(stats.AVG) || 0,
-            PA: parseInt(stats.PA) || 0,
-            AB: parseInt(stats.AB) || 0,
-            R: parseInt(stats.R) || 0,
-            H: parseInt(stats.H) || 0,
-            '2B': parseInt(stats['2B']) || 0,
-            '3B': parseInt(stats['3B']) || 0,
-            HR: parseInt(stats.HR) || 0,
-            TB: parseInt(stats.TB) || 0,
-            RBI: parseInt(stats.RBI) || 0,
-            SAC: parseInt(stats.SAC) || 0,
-            SF: parseInt(stats.SF) || 0
+            // 나머지는 per-game으로 변환
+            PA: (parseInt(stats.PA) || 0) / battingGames,
+            AB: (parseInt(stats.AB) || 0) / battingGames,
+            R: (parseInt(stats.R) || 0) / battingGames,
+            H: (parseInt(stats.H) || 0) / battingGames,
+            '2B': (parseInt(stats['2B']) || 0) / battingGames,
+            '3B': (parseInt(stats['3B']) || 0) / battingGames,
+            HR: (parseInt(stats.HR) || 0) / battingGames,
+            TB: (parseInt(stats.TB) || 0) / battingGames,
+            RBI: (parseInt(stats.RBI) || 0) / battingGames,
+            SAC: (parseInt(stats.SAC) || 0) / battingGames,
+            SF: (parseInt(stats.SF) || 0) / battingGames
         },
         pitching: {
+            // ERA, WHIP은 이미 비율
             ERA: parseFloat(pitching.ERA) || 0,
-            W: parseInt(pitching.W) || 0,
-            L: parseInt(pitching.L) || 0,
-            SV: parseInt(pitching.SV) || 0,
-            HLD: parseInt(pitching.HLD) || 0,
             WHIP: parseFloat(pitching.WHIP) || 0,
-            IP: parseFloat(pitching.IP) || 0,
-            H: parseInt(pitching.H) || 0,
-            HR: parseInt(pitching.HR) || 0,
-            BB: parseInt(pitching.BB) || 0,
-            HBP: parseInt(pitching.HBP) || 0,
-            SO: parseInt(pitching.SO) || 0,
-            R: parseInt(pitching.R) || 0,
-            ER: parseInt(pitching.ER) || 0
+            // IP는 소수점 변환
+            IP: parseIP(pitching.IP),
+            // 나머지는 per-game으로 변환
+            W: (parseInt(pitching.W) || 0) / pitchingGames,
+            L: (parseInt(pitching.L) || 0) / pitchingGames,
+            SV: (parseInt(pitching.SV) || 0) / pitchingGames,
+            HLD: (parseInt(pitching.HLD) || 0) / pitchingGames,
+            H: (parseInt(pitching.H) || 0) / pitchingGames,
+            HR: (parseInt(pitching.HR) || 0) / pitchingGames,
+            BB: (parseInt(pitching.BB) || 0) / pitchingGames,
+            HBP: (parseInt(pitching.HBP) || 0) / pitchingGames,
+            SO: (parseInt(pitching.SO) || 0) / pitchingGames,
+            R: (parseInt(pitching.R) || 0) / pitchingGames,
+            ER: (parseInt(pitching.ER) || 0) / pitchingGames
         },
         fielding: {
-            E: parseInt(fielding.E) || 0,
-            PK: parseInt(fielding.PK) || 0,
-            PO: parseInt(fielding.PO) || 0,
-            A: parseInt(fielding.A) || 0,
-            DP: parseInt(fielding.DP) || 0,
+            // FPCT는 이미 비율
             FPCT: parseFloat(fielding.FPCT) || 0,
-            PB: parseInt(fielding.PB) || 0,
-            SB: parseInt(fielding.SB) || 0,
-            CS: parseInt(fielding.CS) || 0,
-            'CS%': parseFloat(fielding['CS%']) || 0
+            // CSp -> CS% 변환 및 정규화
+            'CS%': normalizePercentage(fielding.CSp),
+            // PKO -> PK 매핑, 수비는 경기수 정보가 없으므로 batting 경기수 사용
+            PK: (parseInt(fielding.PKO) || 0) / battingGames,
+            E: (parseInt(fielding.E) || 0) / battingGames,
+            PO: (parseInt(fielding.PO) || 0) / battingGames,
+            A: (parseInt(fielding.A) || 0) / battingGames,
+            DP: (parseInt(fielding.DP) || 0) / battingGames,
+            PB: (parseInt(fielding.PB) || 0) / battingGames,
+            SB: (parseInt(fielding.SB) || 0) / battingGames,
+            CS: (parseInt(fielding.CS) || 0) / battingGames
         },
         baserunning: {
-            SBA: parseInt(baserunning.SBA) || 0,
-            SB: parseInt(baserunning.SB) || 0,
-            CS: parseInt(baserunning.CS) || 0,
-            'SB%': parseFloat(baserunning['SB%']) || 0,
-            OOB: parseInt(baserunning.OOB) || 0,
-            PKO: parseInt(baserunning.PKO) || 0
+            // SBp -> SB% 변환 및 정규화
+            'SB%': normalizePercentage(baserunning.SBp),
+            // 나머지는 per-game으로 변환
+            SBA: (parseInt(baserunning.SBA) || 0) / baserunningGames,
+            SB: (parseInt(baserunning.SB) || 0) / baserunningGames,
+            CS: (parseInt(baserunning.CS) || 0) / baserunningGames,
+            OOB: (parseInt(baserunning.OOB) || 0) / baserunningGames,
+            PKO: (parseInt(baserunning.PKO) || 0) / baserunningGames
         }
     };
 }
@@ -324,8 +363,16 @@ predictBtn.addEventListener('click', async () => {
         const homePitcherERA = homeTeam.pitchers[homePitcherIdx].ERA;
         const awayPitcherERA = awayTeam.pitchers[awayPitcherIdx].ERA;
 
+        // 디버깅: 변환된 스탯 확인
+        console.log('홈팀 변환된 스탯:', homeStats);
+        console.log('어웨이팀 변환된 스탯:', awayStats);
+        console.log('선발 투수 ERA 풀:', starterERAs.slice(0, 10), '...(총', starterERAs.length, '명)');
+
         // 승률 계산
         const { homeProb, awayProb } = calculateWinProbability(homeStats, awayStats, homePitcherERA, awayPitcherERA, leagueStats, starterERAs);
+
+        // 디버깅: 계산 결과 확인
+        console.log('홈팀 승률:', homeProb, '어웨이팀 승률:', awayProb);
 
         // 결과 표시
         const homeWinRate = (homeProb * 100).toFixed(1);

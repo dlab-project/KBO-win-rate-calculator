@@ -6,9 +6,9 @@ const CAT_WEIGHTS = {
   baserunning: 0.05
 };
 
-// ------------------- 세부 지표 가중치 -------------------
+// ------------------- 세부 지표 가중치 (text.txt 공식) -------------------
 const BAT_WEIGHTS = { AVG: 0.050, PA: 0.020, AB: 0.020, R: 0.200, H: 0.130, '2B': 0.040, '3B': 0.030, HR: 0.100, TB: 0.100, RBI: 0.200, SAC: 0.050, SF: 0.060 };
-const PIT_WEIGHTS = { ERA: 0.080, starter_ERA: 0.05, W: 0.100, L: 0.050, SV: 0.080, HLD: 0.050, WHIP: 0.150, IP: 0.100, H: 0.030, HR: 0.020, BB: 0.020, HBP: 0.020, SO: 0.120, R: 0.040, ER: 0.040 };
+const PIT_WEIGHTS = { ERA: 0.125, starter_ERA: 0.055, W: 0.100, L: 0.050, SV: 0.080, HLD: 0.050, WHIP: 0.150, IP: 0.100, H: 0.030, HR: 0.020, BB: 0.020, HBP: 0.020, SO: 0.120, R: 0.040, ER: 0.040 };
 const FIE_WEIGHTS = { E: 0.200, PK: 0.100, PO: 0.100, A: 0.100, DP: 0.100, FPCT: 0.200, PB: 0.050, SB: 0.050, CS: 0.050, 'CS%': 0.050 };
 const BAS_WEIGHTS = { SBA: 0.050, SB: 0.250, CS: 0.100, 'SB%': 0.200, OOB: 0.250, PKO: 0.150 };
 
@@ -43,15 +43,26 @@ function categoryScore(stats, weights, lowerBetterKeys, leagueStats) {
 
 function totalScore(teamStats, starterERA, leagueStats, starterERAs) {
   const bat = categoryScore(teamStats.batting, BAT_WEIGHTS, LOWER_BETTER.batting, leagueStats?.map(s => s.batting));
-  const pit = categoryScore(teamStats.pitching, { ...PIT_WEIGHTS, ERA: PIT_WEIGHTS.ERA - 0.05 }, LOWER_BETTER.pitching, leagueStats?.map(s => s.pitching));
+
+  // text.txt 공식에 따라 ERA는 0.125 가중치로, starter_ERA는 0.055 가중치로 별도 계산
+  const pitWithoutStarter = { ...PIT_WEIGHTS };
+  delete pitWithoutStarter.starter_ERA; // starter_ERA는 별도 처리
+
+  const pit = categoryScore(teamStats.pitching, pitWithoutStarter, LOWER_BETTER.pitching, leagueStats?.map(s => s.pitching));
   const starterEraScore = PIT_WEIGHTS.starter_ERA * zScore(starterERA, starterERAs || [starterERA], true);
   const fie = categoryScore(teamStats.fielding, FIE_WEIGHTS, LOWER_BETTER.fielding, leagueStats?.map(s => s.fielding));
   const bas = categoryScore(teamStats.baserunning, BAS_WEIGHTS, LOWER_BETTER.baserunning, leagueStats?.map(s => s.baserunning));
 
-  return CAT_WEIGHTS.batting * bat +
-         CAT_WEIGHTS.pitching * (pit + starterEraScore) +
-         CAT_WEIGHTS.fielding * fie +
-         CAT_WEIGHTS.baserunning * bas;
+  const totalScore = CAT_WEIGHTS.batting * bat +
+                     CAT_WEIGHTS.pitching * (pit + starterEraScore) +
+                     CAT_WEIGHTS.fielding * fie +
+                     CAT_WEIGHTS.baserunning * bas;
+
+  // 디버깅 로그
+  console.log('카테고리 점수 - batting:', bat, 'pitching:', pit, 'starterERA:', starterEraScore, 'fielding:', fie, 'baserunning:', bas);
+  console.log('최종 점수:', totalScore);
+
+  return totalScore;
 }
 
 function softmax(a, b, tau = 1) {
