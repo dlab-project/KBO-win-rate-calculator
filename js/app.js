@@ -6,73 +6,124 @@ let teamStatsCache = new Map(); // 팀 스탯 캐시
 const pitchers = {
     "Doosan Bears": [
         { name: "곽빈", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/68220.jpg", ERA: 4.16 },
-        { name: "잭 로그", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55239.jpg", ERA: 3.23 },
-        { name: "최승용", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51264.jpg", ERA: 4.05 },
         { name: "최원준", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/67263.jpg", ERA: 4.61 },
-        { name: "콜 어빈", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55257.jpg", ERA: 4.28 }
+        { name: "최승용", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51264.jpg", ERA: 4.05 },
+        { name: "잭 로그", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55239.jpg", ERA: 3.23 },
+        { name: "콜 어빈", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55257.jpg", ERA: 4.28 },
+        { name: "이용찬", img_url: "", ERA: 4.50 },
+        { name: "장원준", img_url: "", ERA: 4.50 },
+        { name: "김민규", img_url: "", ERA: 4.50 },
+        { name: "박치국", img_url: "", ERA: 4.50 },
+        { name: "김유성", img_url: "", ERA: 4.50 }
     ],
     "Hanwha Eagles": [
+        { name: "류현진", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/76715.jpg", ERA: 3.59 },
         { name: "문동주", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/52701.jpg", ERA: 3.36 },
         { name: "라이언 와이스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54755.jpg", ERA: 2.95 },
-        { name: "류현진", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/76715.jpg", ERA: 3.59 },
         { name: "코디 폰세", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55730.jpg", ERA: 1.53 },
-        { name: "엄상백", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/65056.jpg", ERA: 7.42 }
+        { name: "장민재", img_url: "", ERA: 4.50 },
+        { name: "김민우", img_url: "", ERA: 4.50 },
+        { name: "황영묵", img_url: "", ERA: 4.50 },
+        { name: "남지민", img_url: "", ERA: 4.50 },
+        { name: "이태양", img_url: "", ERA: 4.50 },
+        { name: "박준영", img_url: "", ERA: 4.50 }
     ],
     "KIA Tigers": [
-        { name: "김도현", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/69745.jpg", ERA: 4.43 },
-        { name: "애덤 올러", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55633.jpg", ERA: 3.48 },
         { name: "양현종", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/77637.jpg", ERA: 4.41 },
+        { name: "제임스 네일", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54640.jpg", ERA: 2.27 },
+        { name: "애덤 올러", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55633.jpg", ERA: 3.48 },
+        { name: "김도현", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/69745.jpg", ERA: 4.43 },
         { name: "윤영철", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/53613.jpg", ERA: 5.58 },
-        { name: "제임스 네일", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54640.jpg", ERA: 2.27 }
+        { name: "임기영", img_url: "", ERA: 4.50 },
+        { name: "이의리", img_url: "", ERA: 4.50 },
+        { name: "한승혁", img_url: "", ERA: 4.50 },
+        { name: "김건국", img_url: "", ERA: 4.50 },
+        { name: "전상현", img_url: "", ERA: 4.50 }
     ],
     "Kiwoom Heroes": [
-        { name: "김윤하", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54319.jpg", ERA: 6.14 },
+        { name: "하영민", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/64350.jpg", ERA: 5.55 },
         { name: "로젠버그", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55322.jpg", ERA: 3.23 },
-        { name: "윤현", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55396.jpg", ERA: 8.59 },
+        { name: "김윤하", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54319.jpg", ERA: 6.14 },
         { name: "정현우", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55313.jpg", ERA: 5.28 },
-        { name: "하영민", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/64350.jpg", ERA: 5.55 }
+        { name: "윤현", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55396.jpg", ERA: 8.59 },
+        { name: "장재영", img_url: "", ERA: 4.50 },
+        { name: "최원태", img_url: "", ERA: 4.50 },
+        { name: "김동혁", img_url: "", ERA: 4.50 },
+        { name: "이영준", img_url: "", ERA: 4.50 },
+        { name: "한선태", img_url: "", ERA: 4.50 }
     ],
     "kt wiz": [
-        { name: "소형준", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/50030.jpg", ERA: 3.25 },
         { name: "고영표", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/64001.jpg", ERA: 2.85 },
+        { name: "소형준", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/50030.jpg", ERA: 3.25 },
         { name: "윌리엄 쿠에바스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/69032.jpg", ERA: 5.40 },
-        { name: "오원석", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/50859.jpg", ERA: 3.27 }
+        { name: "배제성", img_url: "", ERA: 4.50 },
+        { name: "엄상백", img_url: "", ERA: 4.50 },
+        { name: "김민", img_url: "", ERA: 4.50 },
+        { name: "주권", img_url: "", ERA: 4.50 },
+        { name: "박영현", img_url: "", ERA: 4.50 },
+        { name: "정성곤", img_url: "", ERA: 4.50 },
+        { name: "최건", img_url: "", ERA: 4.50 }
     ],
     "LG Twins": [
+        { name: "임찬규", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/61101.jpg", ERA: 2.74 },
+        { name: "요니 치리노스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55146.jpg", ERA: 3.47 },
         { name: "손주영", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/67143.jpg", ERA: 3.30 },
         { name: "송승기", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51111.jpg", ERA: 3.43 },
         { name: "엘리에이저 에르난데스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54119.jpg", ERA: 4.23 },
-        { name: "요니 치리노스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55146.jpg", ERA: 3.47 },
-        { name: "임찬규", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/61101.jpg", ERA: 2.74 }
+        { name: "김윤식", img_url: "", ERA: 4.50 },
+        { name: "이민호", img_url: "", ERA: 4.50 },
+        { name: "정우영", img_url: "", ERA: 4.50 },
+        { name: "이지강", img_url: "", ERA: 4.50 },
+        { name: "최동민", img_url: "", ERA: 4.50 }
     ],
     "Lotte Giants": [
-        { name: "김진욱", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51516.jpg", ERA: 10 },
         { name: "나균안", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/67539.jpg", ERA: 3.97 },
         { name: "박세웅", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/64021.jpg", ERA: 4.94 },
         { name: "찰리 반즈", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/52528.jpg", ERA: 5.32 },
-        { name: "터커 데이비슨", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55536.jpg", ERA: 3.65 }
+        { name: "터커 데이비슨", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55536.jpg", ERA: 3.65 },
+        { name: "김진욱", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51516.jpg", ERA: 10 },
+        { name: "문경찬", img_url: "", ERA: 4.50 },
+        { name: "이인복", img_url: "", ERA: 4.50 },
+        { name: "서준원", img_url: "", ERA: 4.50 },
+        { name: "구승민", img_url: "", ERA: 4.50 },
+        { name: "조무근", img_url: "", ERA: 4.50 }
     ],
     "NC Dinos": [
-        { name: "라일리", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55903.jpg", ERA: 3.64 },
-        { name: "로건", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55912.jpg", ERA: 3.93 },
         { name: "신민혁", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/68902.jpg", ERA: 5.27 },
-        { name: "신영우", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/53919.jpg", ERA: 7.88 },
-        { name: "이재학", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/60263.jpg", ERA: 4.6 }
+        { name: "이재학", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/60263.jpg", ERA: 4.6 },
+        { name: "로건", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55912.jpg", ERA: 3.93 },
+        { name: "라일리", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55903.jpg", ERA: 3.64 },
+        { name: "최성영", img_url: "", ERA: 4.50 },
+        { name: "송명기", img_url: "", ERA: 4.50 },
+        { name: "김영규", img_url: "", ERA: 4.50 },
+        { name: "하준영", img_url: "", ERA: 4.50 },
+        { name: "전의산", img_url: "", ERA: 4.50 },
+        { name: "김휘건", img_url: "", ERA: 4.50 }
     ],
     "Samsung Lions": [
-        { name: "데니 레예스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54443.jpg", ERA: 4.14 },
-        { name: "아리엘 후라도", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/53375.jpg", ERA: 2.56 },
         { name: "원태인", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/69446.jpg", ERA: 3.31 },
+        { name: "아리엘 후라도", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/53375.jpg", ERA: 2.56 },
+        { name: "데니 레예스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54443.jpg", ERA: 4.14 },
+        { name: "최원태", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/65320.jpg", ERA: 4.59 },
         { name: "이승현", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51454.jpg", ERA: 4.75 },
-        { name: "최원태", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/65320.jpg", ERA: 4.59 }
+        { name: "이재희", img_url: "", ERA: 4.50 },
+        { name: "이태양", img_url: "", ERA: 4.50 },
+        { name: "이진욱", img_url: "", ERA: 4.50 },
+        { name: "최채흥", img_url: "", ERA: 4.50 },
+        { name: "김윤수", img_url: "", ERA: 4.50 }
     ],
     "SSG Landers": [
         { name: "김광현", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/77829.jpg", ERA: 4.41 },
+        { name: "미치 화이트", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55855.jpg", ERA: 2.84 },
         { name: "드루 앤더슨", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54833.jpg", ERA: 2.21 },
         { name: "문승원", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/62869.jpg", ERA: 4.74 },
-        { name: "미치 화이트", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55855.jpg", ERA: 2.84 },
-        { name: "박종훈", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/60841.jpg", ERA: 7.11 }
-    ]
+        { name: "박종훈", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/60841.jpg", ERA: 7.11 },
+        { name: "오원석", img_url: "", ERA: 4.50 },
+        { name: "노경은", img_url: "", ERA: 4.50 },
+        { name: "윤동현", img_url: "", ERA: 4.50 },
+        { name: "서진용", img_url: "", ERA: 4.50 },
+        { name: "김정우", img_url: "", ERA: 4.50 }
+    ],
 };
 
 const homeTeamSelect = document.getElementById('home-team-select');
