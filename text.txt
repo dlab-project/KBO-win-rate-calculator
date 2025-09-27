@@ -1,199 +1,50 @@
-좋아. **네가 Supabase에 저장한 스키마(테이블/필드 이름) 그대로** 써서, 그 데이터만으로 바로 승률이 계산되도록 “공식”을 정리해줄게. (코드 아님. 수식/절차만.)
-아래 표기/단계만 따르면 Supabase에서 뽑은 값들을 그대로 넣어서 승률이 나온다.
+두산 베어스
 
----
+곽빈, 최원준, 최승용, 잭 로그, 콜 어빈, 이용찬, 장원준, 김민규, 박치국, 김유성. 
+MyKBO Stats
 
-# 0) 표기(네 스키마 그대로)
+한화 이글스
 
-팀 $i$ (home/away)
+류현진, 문동주, 라이언 와이스, 코디 폰세, 장민재, 김민우, 황영묵, 남지민, 이태양, 박준영. 
+MyKBO Stats
 
-* Batting: `public.kbo_team_stats`
-  필드: `AVG, G, PA, AB, R, H, 2B, 3B, HR, TB, RBI, SAC, SF`
-* Pitching: `public.kbo_team_pitching_stats`
-  필드: `ERA, G, W, L, SV, HLD, WPCT, IP, H, HR, BB, HBP, SO, R, ER, WHIP`
-* Fielding: `public.kbo_team_fielding_stats`
-  필드: `E, PKO, PO, A, DP, FPCT, PB, SB, CS, CSp`
-* Baserunning: `public.kbo_team_baserunning_stats`
-  필드: `game, SBA, SB, CS, SBp, OOB, PKO`
-* Starter ERA: 팀 선택 시 JSON(프론트의 `teams[*].pitchers[*].ERA`)에서 가져온 선발 ERA
+KIA 타이거즈
 
-가중치:
+양현종, 제임스 네일, 애덤 올러, 김도현, 윤영철, 임기영, 이의리, 한승혁, 김건국, 전상현. 
+MyKBO Stats
 
-* 카테고리: $w_{bat}=0.35,\ w_{pit}=0.40,\ w_{fld}=0.20,\ w_{run}=0.05$
-* 카테고리 내 지표 가중치(네가 정한 값 그대로):
+LG 트윈스
 
-  * Batting:
-    $w\_{AVG}=0.050,\ w\_{PA}=0.020,\ w\_{AB}=0.020,\ w\_{R}=0.200,\ w\_{H}=0.130,\ w\_{2B}=0.040,\ w\_{3B}=0.030,\ w\_{HR}=0.100,\ w\_{TB}=0.100,\ w\_{RBI}=0.200,\ w\_{SAC}=0.050,\ w\_{SF}=0.060$
-  * Pitching:
-    $w\_{ERA}=0.180,\ w\_{W}=0.100,\ w\_{L}=0.050,\ w\_{SV}=0.080,\ w\_{HLD}=0.050,\ w\_{WHIP}=0.150,\ w\_{IP}=0.100,\ w\_{H}=0.030,\ w\_{HR}=0.020,\ w\_{BB}=0.020,\ w\_{HBP}=0.020,\ w\_{SO}=0.120,\ w\_{R}=0.040,\ w\_{ER}=0.040$
-  * Fielding:
-    $w\_{E}=0.200,\ w\_{PK}=0.100,\ w\_{PO}=0.100,\ w\_{A}=0.100,\ w\_{DP}=0.100,\ w\_{FPCT}=0.200,\ w\_{PB}=0.050,\ w\_{SB}=0.050,\ w\_{CS}=0.050,\ w\_{CS\%}=0.050$
-  * Baserunning:
-    $w\_{SBA}=0.050,\ w\_{SB}=0.250,\ w\_{CS}=0.100,\ w\_{SB\%}=0.200,\ w\_{OOB}=0.250,\ w\_{PKO}=0.150$
+임찬규, 요니 치리노스, 손주영, 송승기, 엘리에이저 에르난데스, 김윤식, 이민호, 정우영, 이지강, 최동민. 
+MyKBO Stats
 
-“낮을수록 좋은” 지표 집합:
+롯데 자이언츠
 
-* 투수: $\{ERA, WHIP, H, HR, BB, HBP, R, ER, L\}$
-* 수비: $\{E, PB, SB\}$  (여기 SB는 “도루 허용”임)
-* 주루: $\{CS, OOB, PKO\}$
+나균안, 박세웅, 찰리 반즈, 터커 데이비슨, 김진욱, 문경찬, 이인복, 서준원, 구승민, 조무근. 
+MyKBO Stats
 
-별칭/정규화:
+NC 다이노스
 
-* Fielding.PKO → **PK**(수비 견제 아웃)로 간주
-* Fielding.CSp → **CS%**
-* Baserunning.SBp → **SB%**
-* 퍼센트(SBp, CSp)는 값이 1보다 크면 100으로 나눠서 $[0,1]$로 변환
-* IP는 “$a\ 1/3,\ a\ 2/3$” → $a+\frac{1}{3}, a+\frac{2}{3}$으로 변환
+신민혁, 이재학, 로건(외국인), 라일리(외국인), 최성영, 송명기, 김영규, 하준영, 전의산(투수 전향 시 후보), 김휘건. 
+MyKBO Stats
++1
 
----
+삼성 라이온즈
 
-# 1) 퍼게임 변환(합계형)
+원태인, 아리엘 후라도, 데니 레예스, 최원태, 이승현, 이재희, 이태양(이적 여부 반영 필요 시 후보 조정), 이진욱, 최채흥, 김윤수. 
+MyKBO Stats
 
-합계형 지표는 경기수로 나눠 **rate**로 만든다. (Batting/Pitching은 `G`, Baserunning은 `game` 사용)
+SSG 랜더스
 
-$$
-x^{rate}_{i,bat,k}=
-\begin{cases}
-\frac{kbo\_team\_stats.k}{kbo\_team\_stats.G}, & k\in\{PA,AB,R,H,2B,3B,HR,TB,RBI,SAC,SF\}\\
-kbo\_team\_stats.AVG, & k=AVG
-\end{cases}
-$$
+김광현, 미치 화이트, 드루 앤더슨, 문승원, 박종훈, 오원석, 노경은, 윤동현, 서진용(롱맨 선발 대체 가능), 김정우. 
+MyKBO Stats
 
-$$
-x^{rate}_{i,pit,k}=
-\begin{cases}
-\frac{kbo\_team\_pitching\_stats.k}{kbo\_team\_pitching\_stats.G}, & k\in\{W,L,SV,HLD,H,HR,BB,HBP,SO,R,ER\}\\
-kbo\_team\_pitching\_stats.ERA,\quad kbo\_team\_pitching\_stats.WHIP, & k\in\{ERA,WHIP\}\\
-IP^{dec}, & k=IP \ (\text{IP를 소수로 변환})
-\end{cases}
-$$
+kt wiz
 
-$$
-x^{rate}_{i,fld,k}=
-\begin{cases}
-\frac{kbo\_team\_fielding\_stats.k}{kbo\_team\_fielding\_stats.G}, & k\in\{E,PK,PO,A,DP,PB,SB,CS\}\\
-kbo\_team\_fielding\_stats.FPCT, & k=FPCT\\
-\text{CS\%}=\text{CSp}/100\ (\text{CSp}>1이면), & k=CS\%
-\end{cases}
-$$
+고영표, 소형준, 윌리엄 쿠에바스, 배제성, 엄상백(이적/부상 상황에 따라 후보 조정), 김민, 주권(긴 이닝 대체), 박영현(상황 선발 전환 시), 정성곤, 최건. 
+MyKBO Stats
++1
 
-여기서 $PK \equiv PKO$ (fielding 테이블의 PKO를 PK로 사용)
+키움 히어로즈
 
-$$
-x^{rate}_{i,run,k}=
-\begin{cases}
-\frac{kbo\_team\_baserunning\_stats.k}{kbo\_team\_baserunning\_stats.game}, & k\in\{SBA,SB,CS,OOB,PKO\}\\
-\text{SB\%}=\text{SBp}/100\ (\text{SBp}>1이면), & k=SB\%
-\end{cases}
-$$
-
----
-
-# 2) 리그 평균/표준편차 (Supabase에서 전체 팀 기준)
-
-각 지표 $k$에 대해 **모든 팀**의 $x^{rate}_{\*,c,k}$로 평균/표준편차를 구함:
-
-$$
-\mu_{c,k} = \text{mean}\big(\{x^{rate}_{t,c,k}\}_{t\in\text{all teams}}\big),\quad
-\sigma_{c,k} = \text{std}\big(\{x^{rate}_{t,c,k}\}_{t\in\text{all teams}}\big)
-$$
-
-(집단 표준편차 사용. $\sigma_{c,k}=0$이면 $\sigma_{c,k}\leftarrow 1$)
-
----
-
-# 3) z-score 및 방향 통일
-
-각 팀 $i$에 대해:
-
-$$
-z_{i,c,k}=\frac{x^{rate}_{i,c,k}-\mu_{c,k}}{\sigma_{c,k}},\qquad z_{i,c,k}\leftarrow \min(3,\max(-3,z_{i,c,k}))
-$$
-
-$$
-\tilde{z}_{i,c,k}=
-\begin{cases}
--\,z_{i,c,k}, & k\ \text{가 ‘낮을수록 좋은’ 지표}\\
-z_{i,c,k}, & \text{그 외}
-\end{cases}
-$$
-
----
-
-# 4) 카테고리 점수
-
-$$
-S_{i,bat}=\sum_{k\in Batting} w_{bat,k}\ \tilde{z}_{i,bat,k}
-$$
-
-$$
-S_{i,pit}=\sum_{k\in Pitching} w_{pit,k}\ \tilde{z}_{i,pit,k}
-$$
-
-$$
-S_{i,fld}=\sum_{k\in Fielding} w_{fld,k}\ \tilde{z}_{i,fld,k}
-$$
-
-$$
-S_{i,run}=\sum_{k\in Baserunning} w_{run,k}\ \tilde{z}_{i,run,k}
-$$
-
----
-
-# 5) 선발 투수 ERA 보정
-
-* Pitching의 `ERA` 가중치에서 **0.05를 빼고**, **선발 ERA**에 0.05 부여.
-* 선발 ERA도 전체 선발 풀(선택된 선발들 또는 모든 등록 선발)에서 평균/표준편차로 z-score:
-
-$$
-z^{(SP)}_{i} = \frac{SP\_ERA_i - \mu_{SP}}{\sigma_{SP}}\quad\text{(낮을수록 좋으므로)}\quad
-\tilde{z}^{(SP)}_{i}=-\,z^{(SP)}_{i}
-$$
-
-* 조정된 투수 점수:
-
-$$
-S'_{i,pit}=\Big(\sum_{k\neq ERA} w_{pit,k}\ \tilde{z}_{i,pit,k}\Big) + (w_{pit,ERA}-0.05)\ \tilde{z}_{i,pit,ERA} + 0.05\ \tilde{z}^{(SP)}_{i}
-$$
-
----
-
-# 6) 팀 종합 점수
-
-$$
-T_i = 0.35\cdot S_{i,bat}\ +\ 0.40\cdot S'_{i,pit}\ +\ 0.20\cdot S_{i,fld}\ +\ 0.05\cdot S_{i,run}
-$$
-
----
-
-# 7) 승률 변환 (Softmax)
-
-홈팀 $h$, 원정팀 $a$:
-
-$$
-P_{home}^{base}=\frac{e^{T_h}}{e^{T_h}+e^{T_a}},\qquad
-P_{away}^{base}=1-P_{home}^{base}
-$$
-
-(민감도 조절 원하면 $T/\tau$ 사용)
-
----
-
-# 8) 상대전적(H2H) 보정(선택)
-
-만약 Supabase에 H2H 테이블이 있다면(예: `h2h(team_i, team_j, wins, losses)`):
-
-$$
-p_{obs}=\frac{\text{wins}}{\text{wins+losses}},\quad
-p_{shrunk}=\frac{n}{n+k}p_{obs}+\frac{k}{n+k}\cdot 0.5\ \ (k=20,\ n=\text{wins+losses})
-$$
-
-$$
-\Delta=\text{clip}(p_{shrunk}-0.5,\,-0.08,\,+0.08)
-$$
-
-$$
-P_{home}=P_{home}^{base}+\Delta,\quad P_{away}=1-P_{home}
-$$
-
----
+하영민, 로젠버그(외국인), 김윤하, 정현우, 윤현, 장재영, 최원태(과거·이적 고려해 후보군 표기), 김동혁, 이영준, 한선태.
