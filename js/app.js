@@ -425,7 +425,7 @@ predictBtn.addEventListener('click', async () => {
         modal.id = 'winrate-modal';
         modal.innerHTML = `
             <div class="modal-backdrop" style="position:fixed;z-index:1001;inset:0;background:rgba(0,0,0,0.18);"></div>
-            <div class="prediction-result modal-content" style="max-width:480px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);">
+            <div class="prediction-result modal-content" style="max-width:480px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);animation:modalFadeIn 0.3s ease-out;">
                 <h3>🏆 예측 결과</h3>
                 <div class="winrate-bar-container">
                     <div class="winrate-bar">
@@ -546,7 +546,7 @@ predictBtn.addEventListener('click', async () => {
             `;
             statModal.innerHTML = `
                 <div class="modal-backdrop" style="position:fixed;z-index:1001;inset:0;background:rgba(0,0,0,0.18);"></div>
-                <div class="prediction-result modal-content" style="max-width:600px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);">
+                <div class="prediction-result modal-content" style="max-width:600px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);animation:modalFadeIn 0.3s ease-out;">
                     <h3>📊 스텟 비교</h3>
                     <div id="stats-compare-content">${statTable}</div>
                     <button id="close-stats-modal-btn" class="predict-button" style="margin-top:28px;min-width:120px;">닫기</button>
@@ -567,7 +567,7 @@ predictBtn.addEventListener('click', async () => {
         modal.id = 'winrate-modal';
         modal.innerHTML = `
             <div class="modal-backdrop" style="position:fixed;z-index:1001;inset:0;background:rgba(0,0,0,0.18);"></div>
-            <div class="prediction-result modal-content" style="max-width:480px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);">
+            <div class="prediction-result modal-content" style="max-width:480px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);animation:modalFadeIn 0.3s ease-out;">
                 <h3 style='color:#e74c3c;'>❌ 오류</h3>
                 <div class="loading-message" style="color: #e74c3c;background:none;box-shadow:none;padding:0;">
                     승률 계산 중 오류가 발생했습니다<br>
