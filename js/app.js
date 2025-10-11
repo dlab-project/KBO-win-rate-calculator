@@ -426,8 +426,21 @@ predictBtn.addEventListener('click', async () => {
         modal.innerHTML = `
             <div class="modal-backdrop" style="position:fixed;z-index:1001;inset:0;background:rgba(0,0,0,0.18);"></div>
             <div class="prediction-result modal-content" style="max-width:480px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);animation:modalFadeIn 0.3s ease-out;padding:36px;">
-                <h3 style="margin-bottom:24px;">🏆 예측 결과</h3>
-                <div class="winrate-bar-container" style="margin-bottom:32px;">
+                <h3 style="margin-bottom:24px;text-align:center;">🏆 예측 결과</h3>
+
+                <div class="team-matchup-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;padding:16px;background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);border-radius:12px;">
+                    <div style="display:flex;align-items:center;gap:10px;flex:1;">
+                        <img src="${homeTeam.logo}" alt="${homeTeam.team_name}" style="width:36px;height:36px;object-fit:contain;border-radius:50%;">
+                        <span style="font-weight:600;color:#333;font-size:1rem;">${homeTeam.team_name}</span>
+                    </div>
+                    <div style="font-weight:700;color:#667eea;font-size:1.1rem;padding:0 16px;">VS</div>
+                    <div style="display:flex;align-items:center;gap:10px;flex:1;justify-content:flex-end;">
+                        <span style="font-weight:600;color:#333;font-size:1rem;">${awayTeam.team_name}</span>
+                        <img src="${awayTeam.logo}" alt="${awayTeam.team_name}" style="width:36px;height:36px;object-fit:contain;border-radius:50%;">
+                    </div>
+                </div>
+
+                <div class="winrate-bar-container" style="margin-bottom:20px;">
                     <div class="winrate-bar">
                         <div style="width:${homeProb*100}%">${homeWinRate}%</div>
                         <div style="width:${awayProb*100}%">${awayWinRate}%</div>
@@ -508,16 +521,40 @@ predictBtn.addEventListener('click', async () => {
                 { key: 'CS', label: '도루실패', home: homeBase.CS, away: awayBase.CS }
             ];
 
+            // 스탯 비교 함수 (숫자가 높을수록 좋은 스탯)
+            const isHigherBetter = (key) => {
+                const lowerIsBetter = ['ERA', 'WHIP', 'L', 'E', 'CS', 'BB', 'HBP', 'ER'];
+                return !lowerIsBetter.includes(key);
+            };
+
             const generateStatTable = (stats) => {
-                return stats.map(stat => `
-                    <div class="stat-row">
-                        <div class="stat-label">${stat.label}</div>
-                        <div class="stat-values">
-                            <div class="stat-value home-value">${stat.home ?? '-'}</div>
-                            <div class="stat-value away-value">${stat.away ?? '-'}</div>
+                return stats.map(stat => {
+                    const homeVal = parseFloat(stat.home) || 0;
+                    const awayVal = parseFloat(stat.away) || 0;
+
+                    let homeBetter = false;
+                    let awayBetter = false;
+
+                    if (homeVal !== awayVal && stat.home !== '-' && stat.away !== '-') {
+                        if (isHigherBetter(stat.key)) {
+                            homeBetter = homeVal > awayVal;
+                            awayBetter = awayVal > homeVal;
+                        } else {
+                            homeBetter = homeVal < awayVal;
+                            awayBetter = awayVal < homeVal;
+                        }
+                    }
+
+                    return `
+                        <div class="stat-row">
+                            <div class="stat-label">${stat.label}</div>
+                            <div class="stat-values">
+                                <div class="stat-value home-value ${homeBetter ? 'better-stat' : ''}">${stat.home ?? '-'}</div>
+                                <div class="stat-value away-value ${awayBetter ? 'better-stat' : ''}">${stat.away ?? '-'}</div>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             };
             statModal.innerHTML = `
                 <div class="modal-backdrop" style="position:fixed;z-index:1001;inset:0;background:rgba(0,0,0,0.18);"></div>
@@ -700,6 +737,21 @@ predictBtn.addEventListener('click', async () => {
                 .away-value {
                     color: #f59e0b;
                     background: rgba(245, 158, 11, 0.1);
+                }
+
+                .better-stat {
+                    position: relative;
+                    font-weight: 800 !important;
+                    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3) !important;
+                }
+
+                .better-stat::after {
+                    content: '★';
+                    position: absolute;
+                    top: -2px;
+                    right: -2px;
+                    font-size: 10px;
+                    color: #22c55e;
                 }
                 </style>
             `;
