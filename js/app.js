@@ -372,13 +372,8 @@ predictBtn.addEventListener('click', async () => {
     buttonText.textContent = '분석 중...';
     loadingSpinner.style.display = 'block';
 
-    // 로딩 메시지 표시 (팝업이 아닌 기존 위치)
-    resultDiv.innerHTML = `
-        <div class="loading-message">
-            🤖 AI가 경기 데이터를 분석하고 있습니다...<br>
-            <small>팀 성적, 투수 능력, 최근 폼 등을 종합적으로 검토 중</small>
-        </div>
-    `;
+    // 기존 결과 영역 비우기
+    resultDiv.innerHTML = '';
 
     // 3-5초 랜덤 딜레이
     const randomDelay = Math.random() * 2000 + 3000; // 3000ms ~ 5000ms
@@ -419,7 +414,7 @@ predictBtn.addEventListener('click', async () => {
         const homeWinRate = (homeProb * 100).toFixed(1);
         const awayWinRate = (awayProb * 100).toFixed(1);
 
-        // 기존 결과 영역 비우기
+        // 결과 영역 계속 비워두기
         resultDiv.innerHTML = '';
 
         // 이미 모달이 있으면 제거
