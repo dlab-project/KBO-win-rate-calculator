@@ -449,24 +449,36 @@ function showPitcherInfo(teamIdx, pitcherIdx, isHome) {
 homeTeamSelect.addEventListener('change', () => {
     updateTeamSelectOptions();
     updateTeamInfo(homeTeamSelect.value, true);
-    showPitcherInfo(homeTeamSelect.value, homePitcherSelect.selectedIndex, true);
+    // 팀 선택 시에는 투수 정보 표시하지 않음 (투수를 직접 선택해야 함)
     checkProgressConditions();
 });
 
 awayTeamSelect.addEventListener('change', () => {
     updateTeamSelectOptions();
     updateTeamInfo(awayTeamSelect.value, false);
-    showPitcherInfo(awayTeamSelect.value, awayPitcherSelect.selectedIndex, false);
+    // 팀 선택 시에는 투수 정보 표시하지 않음 (투수를 직접 선택해야 함)
     checkProgressConditions();
 });
 
 homePitcherSelect.addEventListener('change', () => {
-    showPitcherInfo(homeTeamSelect.value, homePitcherSelect.selectedIndex, true);
+    // value가 빈 문자열이면 투수 정보 표시하지 않음
+    const pitcherValue = homePitcherSelect.value;
+    if (pitcherValue === '') {
+        showPitcherInfo(homeTeamSelect.value, '', true);
+    } else {
+        showPitcherInfo(homeTeamSelect.value, pitcherValue, true);
+    }
     checkProgressConditions();
 });
 
 awayPitcherSelect.addEventListener('change', () => {
-    showPitcherInfo(awayTeamSelect.value, awayPitcherSelect.selectedIndex, false);
+    // value가 빈 문자열이면 투수 정보 표시하지 않음
+    const pitcherValue = awayPitcherSelect.value;
+    if (pitcherValue === '') {
+        showPitcherInfo(awayTeamSelect.value, '', false);
+    } else {
+        showPitcherInfo(awayTeamSelect.value, pitcherValue, false);
+    }
     checkProgressConditions();
 });
 
