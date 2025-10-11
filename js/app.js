@@ -309,6 +309,22 @@ function convertStatsForWinRate(teamStats) {
 function populateTeamSelects() {
     homeTeamSelect.innerHTML = '';
     awayTeamSelect.innerHTML = '';
+
+    // 기본 옵션 추가
+    const defaultHomeOption = document.createElement('option');
+    defaultHomeOption.value = '';
+    defaultHomeOption.textContent = '홈팀을 선택해주세요';
+    defaultHomeOption.disabled = true;
+    defaultHomeOption.selected = true;
+    homeTeamSelect.appendChild(defaultHomeOption);
+
+    const defaultAwayOption = document.createElement('option');
+    defaultAwayOption.value = '';
+    defaultAwayOption.textContent = '어웨이팀을 선택해주세요';
+    defaultAwayOption.disabled = true;
+    defaultAwayOption.selected = true;
+    awayTeamSelect.appendChild(defaultAwayOption);
+
     teams.forEach((team, idx) => {
         const option1 = document.createElement('option');
         option1.value = idx;
@@ -320,9 +336,7 @@ function populateTeamSelects() {
         option2.textContent = team.team_name;
         awayTeamSelect.appendChild(option2);
     });
-    // 기본값
-    homeTeamSelect.selectedIndex = 0;
-    awayTeamSelect.selectedIndex = 1;
+
     updateTeamSelectOptions();
 }
 
@@ -337,6 +351,18 @@ function updateTeamSelectOptions() {
 }
 
 function updateTeamInfo(teamIdx, isHome) {
+    const teamCard = isHome ?
+        document.getElementById('home-team-card') :
+        document.getElementById('away-team-card');
+
+    if (teamIdx === '' || teamIdx === null || teamIdx === undefined) {
+        // 팀이 선택되지 않은 경우 팀 카드 숨기기
+        if (teamCard) {
+            teamCard.style.display = 'none';
+        }
+        return;
+    }
+
     const team = teams[teamIdx];
     if (isHome) {
         homeLogo.src = team.logo;
@@ -347,22 +373,50 @@ function updateTeamInfo(teamIdx, isHome) {
         document.getElementById('away-team-name').textContent = team.team_name;
         populatePitchers(awayPitcherSelect, team.pitchers);
     }
+
+    // 팀 카드 보이기
+    if (teamCard) {
+        teamCard.style.display = 'block';
+
+        // 카드가 나타난 후 부드럽게 스크롤
+        setTimeout(() => {
+            teamCard.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+                inline: 'nearest'
+            });
+        }, 100); // 카드 렌더링 후 스크롤
+    }
 }
 
 function populatePitchers(selectElem, pitchers) {
     selectElem.innerHTML = '';
+
+    // 기본 옵션 추가
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = '선발 투수를 선택해주세요';
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    selectElem.appendChild(defaultOption);
+
     pitchers.forEach((p, idx) => {
         const option = document.createElement('option');
         option.value = idx;
         option.textContent = p.name ? `${p.name} (ERA: ${p.ERA ?? '-'} )` : p;
         selectElem.appendChild(option);
     });
+
+    // 투수 미리보기 영역 초기화 (숨김)
+    const isHomeSelect = selectElem.id === 'home-pitcher';
+    const infoDiv = document.getElementById(isHomeSelect ? 'home-pitcher-info' : 'away-pitcher-info');
+    if (infoDiv) {
+        infoDiv.style.display = 'none';
+    }
 }
 
 // 투수 정보 표시 영역 추가
 function showPitcherInfo(teamIdx, pitcherIdx, isHome) {
-    const team = teams[teamIdx];
-    const pitcher = team.pitchers[pitcherIdx];
     const infoDivId = isHome ? 'home-pitcher-info' : 'away-pitcher-info';
     let infoDiv = document.getElementById(infoDivId);
     if (!infoDiv) {
@@ -371,9 +425,23 @@ function showPitcherInfo(teamIdx, pitcherIdx, isHome) {
         infoDiv.className = 'pitcher-info';
         (isHome ? homePitcherSelect : awayPitcherSelect).parentNode.appendChild(infoDiv);
     }
+
+    // 팀이나 투수가 선택되지 않은 경우
+    if (teamIdx === '' || teamIdx === null || teamIdx === undefined ||
+        pitcherIdx === '' || pitcherIdx === null || pitcherIdx === undefined) {
+        infoDiv.style.display = 'none';
+        infoDiv.innerHTML = '';
+        return;
+    }
+
+    const team = teams[teamIdx];
+    const pitcher = team.pitchers[pitcherIdx];
+
     if (pitcher && pitcher.img_url) {
         infoDiv.innerHTML = `<img src="${pitcher.img_url}" alt="${pitcher.name}" class="pitcher-face"><br><b>${pitcher.name}</b><br>ERA: ${pitcher.ERA}`;
+        infoDiv.style.display = 'flex'; // 투수 정보가 있을 때만 표시
     } else {
+        infoDiv.style.display = 'none';
         infoDiv.innerHTML = '';
     }
 }
@@ -874,10 +942,11 @@ async function initialize() {
     await loadTeams();
     if (teams.length > 0) {
         populateTeamSelects();
-        updateTeamInfo(0, true);
-        updateTeamInfo(1, false);
-        showPitcherInfo(0, 0, true);
-        showPitcherInfo(1, 0, false);
+        // 초기 상태에서는 팀이 선택되지 않은 상태로 설정
+        updateTeamInfo('', true);
+        updateTeamInfo('', false);
+        showPitcherInfo('', '', true);
+        showPitcherInfo('', '', false);
         checkProgressConditions();
     } else {
         resultDiv.innerHTML = `
