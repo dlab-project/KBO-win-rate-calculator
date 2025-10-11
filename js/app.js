@@ -372,7 +372,7 @@ predictBtn.addEventListener('click', async () => {
     buttonText.textContent = '분석 중...';
     loadingSpinner.style.display = 'block';
 
-    // 로딩 메시지 표시
+    // 로딩 메시지 표시 (팝업이 아닌 기존 위치)
     resultDiv.innerHTML = `
         <div class="loading-message">
             🤖 AI가 경기 데이터를 분석하고 있습니다...<br>
@@ -415,12 +415,22 @@ predictBtn.addEventListener('click', async () => {
         // 랜덤 딜레이 적용
         await new Promise(resolve => setTimeout(resolve, randomDelay));
 
-        // 결과 표시
+        // 결과를 팝업(모달)으로 표시
         const homeWinRate = (homeProb * 100).toFixed(1);
         const awayWinRate = (awayProb * 100).toFixed(1);
 
-        resultDiv.innerHTML = `
-            <div class="prediction-result">
+        // 기존 결과 영역 비우기
+        resultDiv.innerHTML = '';
+
+        // 이미 모달이 있으면 제거
+        let modal = document.getElementById('winrate-modal');
+        if (modal) modal.remove();
+
+        modal = document.createElement('div');
+        modal.id = 'winrate-modal';
+        modal.innerHTML = `
+            <div class="modal-backdrop" style="position:fixed;z-index:1001;inset:0;background:rgba(0,0,0,0.18);"></div>
+            <div class="prediction-result modal-content" style="max-width:480px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);">
                 <h3>🏆 예측 결과</h3>
                 <div class="winrate-bar-container">
                     <div class="winrate-bar">
@@ -432,20 +442,149 @@ predictBtn.addEventListener('click', async () => {
                     <span>${homeTeam.team_name}</span>
                     <span>${awayTeam.team_name}</span>
                 </div>
+                <button id="show-stats-compare-btn" class="predict-button" style="margin:24px 0 0 0;min-width:140px;background:linear-gradient(90deg,#764ba2 0%,#667eea 100%);font-size:1.08em;">스텟 비교하기</button>
                 <div style="margin-top: 20px; font-size: 0.9rem; color: #666;">
                     💡 팀 성적, 투수 능력, 홈/원정 어드밴티지를 종합 분석한 결과입니다
                 </div>
+                <button id="close-winrate-modal-btn" class="predict-button" style="margin-top:32px;min-width:120px;">닫기</button>
             </div>
         `;
+        document.body.appendChild(modal);
+        // 닫기 버튼
+        modal.querySelector('#close-winrate-modal-btn').onclick = () => {
+            modal.remove();
+        };
+        // 스텟 비교하기 버튼
+        modal.querySelector('#show-stats-compare-btn').onclick = async () => {
+            // 이미 있으면 제거
+            let statModal = document.getElementById('stats-compare-modal');
+            if (statModal) statModal.remove();
+            statModal = document.createElement('div');
+            statModal.id = 'stats-compare-modal';
+            // 최신 스탯 fetch
+            const [homeStatsObj, awayStatsObj] = await Promise.all([
+                getTeamStats(homeTeam.team_name),
+                getTeamStats(awayTeam.team_name)
+            ]);
+            const homeStats = homeStatsObj.kbo_team_stats || {};
+            const awayStats = awayStatsObj.kbo_team_stats || {};
+            const homeField = homeStatsObj.kbo_team_fielding_stats || {};
+            const awayField = awayStatsObj.kbo_team_fielding_stats || {};
+            const homeBase = homeStatsObj.kbo_team_baserunning_stats || {};
+            const awayBase = awayStatsObj.kbo_team_baserunning_stats || {};
+            // 비교 표 생성 (디자인 개선)
+            const statTable = `
+                <style>
+                #stats-compare-modal table {
+                    width: 100%;
+                    margin: 18px 0 0 0;
+                    border-collapse: separate;
+                    border-spacing: 0;
+                    font-size: 1.08em;
+                    background: #f8fafc;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    box-shadow: 0 2px 8px 0 #e0e7ff44;
+                }
+                #stats-compare-modal th, #stats-compare-modal td {
+                    padding: 10px 8px;
+                    text-align: center;
+                }
+                #stats-compare-modal thead th {
+                    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+                    color: #fff;
+                    font-size: 1.08em;
+                    border-bottom: 2.5px solid #a5b4fc;
+                }
+                #stats-compare-modal tbody tr.section-row td {
+                    font-weight: 700;
+                    font-size: 1.04em;
+                    background: #e0e7ff;
+                    color: #495057;
+                    border-top: 2px solid #c7d2fe;
+                }
+                #stats-compare-modal tbody tr:not(.section-row):hover {
+                    background: #f1f5f9;
+                }
+                #stats-compare-modal td.key {
+                    color: #667eea;
+                    font-weight: 600;
+                }
+                #stats-compare-modal td.value {
+                    font-family: 'Montserrat', 'Pretendard', sans-serif;
+                    font-size: 1.08em;
+                }
+                #stats-compare-modal td.value.home {
+                    color: #3b82f6;
+                    font-weight: 700;
+                }
+                #stats-compare-modal td.value.away {
+                    color: #f59e42;
+                    font-weight: 700;
+                }
+                </style>
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>${homeTeam.team_name}</th>
+                            <th>${awayTeam.team_name}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="section-row"><td colspan="3">타격</td></tr>
+                        <tr><td class="key">AVG</td><td class="value home">${homeStats.AVG ?? '-'}</td><td class="value away">${awayStats.AVG ?? '-'}</td></tr>
+                        <tr><td class="key">R(득점)</td><td class="value home">${homeStats.R ?? '-'}</td><td class="value away">${awayStats.R ?? '-'}</td></tr>
+                        <tr><td class="key">HR(홈런)</td><td class="value home">${homeStats.HR ?? '-'}</td><td class="value away">${awayStats.HR ?? '-'}</td></tr>
+                        <tr><td class="key">TB(루타)</td><td class="value home">${homeStats.TB ?? '-'}</td><td class="value away">${awayStats.TB ?? '-'}</td></tr>
+                        <tr><td class="key">RBI</td><td class="value home">${homeStats.RBI ?? '-'}</td><td class="value away">${awayStats.RBI ?? '-'}</td></tr>
+                        <tr class="section-row"><td colspan="3">주루</td></tr>
+                        <tr><td class="key">SB(도루)</td><td class="value home">${homeBase.SB ?? '-'}</td><td class="value away">${awayBase.SB ?? '-'}</td></tr>
+                        <tr><td class="key">SB%(도루성공률)</td><td class="value home">${homeBase.SBp ?? '-'}</td><td class="value away">${awayBase.SBp ?? '-'}</td></tr>
+                        <tr><td class="key">SBA(도루시도)</td><td class="value home">${homeBase.SBA ?? '-'}</td><td class="value away">${awayBase.SBA ?? '-'}</td></tr>
+                        <tr class="section-row"><td colspan="3">수비</td></tr>
+                        <tr><td class="key">FPCT(수비율)</td><td class="value home">${homeField.FPCT ?? '-'}</td><td class="value away">${awayField.FPCT ?? '-'}</td></tr>
+                        <tr><td class="key">E(실책)</td><td class="value home">${homeField.E ?? '-'}</td><td class="value away">${awayField.E ?? '-'}</td></tr>
+                        <tr><td class="key">DP(더블플레이)</td><td class="value home">${homeField.DP ?? '-'}</td><td class="value away">${awayField.DP ?? '-'}</td></tr>
+                    </tbody>
+                </table>
+            `;
+            statModal.innerHTML = `
+                <div class="modal-backdrop" style="position:fixed;z-index:1001;inset:0;background:rgba(0,0,0,0.18);"></div>
+                <div class="prediction-result modal-content" style="max-width:600px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);">
+                    <h3>📊 스텟 비교</h3>
+                    <div id="stats-compare-content">${statTable}</div>
+                    <button id="close-stats-modal-btn" class="predict-button" style="margin-top:28px;min-width:120px;">닫기</button>
+                </div>
+            `;
+            document.body.appendChild(statModal);
+            statModal.querySelector('#close-stats-modal-btn').onclick = () => {
+                statModal.remove();
+            };
+        };
 
     } catch (error) {
         console.error('승률 계산 오류:', error);
-        resultDiv.innerHTML = `
-            <div class="loading-message" style="color: #e74c3c;">
-                ❌ 승률 계산 중 오류가 발생했습니다<br>
-                <small>${error.message}</small>
+        // 에러도 팝업으로 표시
+        let modal = document.getElementById('winrate-modal');
+        if (modal) modal.remove();
+        modal = document.createElement('div');
+        modal.id = 'winrate-modal';
+        modal.innerHTML = `
+            <div class="modal-backdrop" style="position:fixed;z-index:1001;inset:0;background:rgba(0,0,0,0.18);"></div>
+            <div class="prediction-result modal-content" style="max-width:480px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);">
+                <h3 style='color:#e74c3c;'>❌ 오류</h3>
+                <div class="loading-message" style="color: #e74c3c;background:none;box-shadow:none;padding:0;">
+                    승률 계산 중 오류가 발생했습니다<br>
+                    <small>${error.message}</small>
+                </div>
+                <button id="close-winrate-modal-btn" class="predict-button" style="margin-top:32px;min-width:120px;">닫기</button>
             </div>
         `;
+        document.body.appendChild(modal);
+        modal.querySelector('#close-winrate-modal-btn').onclick = () => {
+            modal.remove();
+        };
     } finally {
         // 버튼 상태 복원
         predictBtn.disabled = false;
