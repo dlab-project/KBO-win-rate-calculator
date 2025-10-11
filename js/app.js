@@ -440,6 +440,15 @@ function showPitcherInfo(teamIdx, pitcherIdx, isHome) {
     if (pitcher && pitcher.img_url) {
         infoDiv.innerHTML = `<img src="${pitcher.img_url}" alt="${pitcher.name}" class="pitcher-face"><br><b>${pitcher.name}</b><br>ERA: ${pitcher.ERA}`;
         infoDiv.style.display = 'flex'; // 투수 정보가 있을 때만 표시
+
+        // 투수 정보가 표시된 후 부드럽게 스크롤
+        setTimeout(() => {
+            infoDiv.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+                inline: 'nearest'
+            });
+        }, 150); // 투수 정보 렌더링 후 스크롤
     } else {
         infoDiv.style.display = 'none';
         infoDiv.innerHTML = '';
