@@ -10,7 +10,7 @@ const pitchers = {
     { name: "손주영", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/67143.jpg", ERA: 3.30 },
     { name: "송승기", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51111.jpg", ERA: 3.50 },
     { name: "엘리에이저 에르난데스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54119.jpg", ERA: 4.23 },
-    { name: "톨허스트", img_url: "", ERA: 2.84 }
+    { name: "톨허스트", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55130.jpg", ERA: 2.84 }
   ],
 
   "Hanwha Eagles": [
@@ -18,7 +18,7 @@ const pitchers = {
     { name: "라이언 와이스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54755.jpg", ERA: 2.99 },
     { name: "류현진", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/76715.jpg", ERA: 3.23 },
     { name: "문동주", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/52701.jpg", ERA: 3.59 },
-    { name: "황준서", img_url: "", ERA: 5.57 }
+    { name: "황준서", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54729.jpg", ERA: 5.57 }
   ],
 
   "SSG Landers": [
@@ -26,8 +26,8 @@ const pitchers = {
     { name: "미치 화이트", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55855.jpg", ERA: 2.87 },
     { name: "김광현", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/77829.jpg", ERA: 4.92 },
     { name: "문승원", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/62869.jpg", ERA: 5.24 },
-    { name: "송영진", img_url: "", ERA: 5.86 },
-    { name: "전영준", img_url: "", ERA: 4.56 }
+    { name: "송영진", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/53898.jpg", ERA: 5.86 },
+    { name: "전영준", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/52809.jpg", ERA: 4.56 }
   ],
 
   "Samsung Lions": [
@@ -35,11 +35,11 @@ const pitchers = {
     { name: "원태인", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/69446.jpg", ERA: 3.24 },
     { name: "최원태", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/65320.jpg", ERA: 4.92 },
     { name: "이승현", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51454.jpg", ERA: 3.08 },
-    { name: "가라비또", img_url: "", ERA: 2.63 },
-    { name: "이재희", img_url: "", ERA: 3.00 },
+    { name: "가라비토", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55460.jpg", ERA: 2.63 },
+    { name: "이재희", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51460.jpg", ERA: 3.00 },
     { name: "데니 레예스", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/54443.jpg", ERA: 4.14 },
-    { name: "배찬승", img_url: "", ERA: 3.99 },
-    { name: "이창용", img_url: "", ERA: 1.93 }
+    { name: "배찬승", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/55455.jpg", ERA: 3.99 },
+    { name: "이창용", img_url: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/51407.jpg", ERA: 1.93 }
   ],
 
   "kt wiz": [
