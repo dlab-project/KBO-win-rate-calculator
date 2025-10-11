@@ -2,6 +2,57 @@
 let teams = [];
 let teamStatsCache = new Map(); // 팀 스탯 캐시
 
+// 프로그레스 인디케이터 관리
+let currentStep = 1;
+
+function updateProgressStep(step) {
+    const steps = document.querySelectorAll('.step');
+    const stepLines = document.querySelectorAll('.step-line');
+
+    // 모든 단계를 초기화
+    steps.forEach(stepEl => {
+        stepEl.classList.remove('active', 'completed');
+    });
+
+    stepLines.forEach(line => {
+        line.classList.remove('completed');
+    });
+
+    // 현재 단계까지 업데이트
+    for (let i = 1; i <= step; i++) {
+        const stepEl = document.querySelector(`[data-step="${i}"]`);
+        if (i < step) {
+            stepEl.classList.add('completed');
+        } else if (i === step) {
+            stepEl.classList.add('active');
+        }
+    }
+
+    // 연결선 업데이트 (완료된 단계들 사이)
+    for (let i = 0; i < step - 1; i++) {
+        if (stepLines[i]) {
+            stepLines[i].classList.add('completed');
+        }
+    }
+
+    currentStep = step;
+}
+
+function checkProgressConditions() {
+    const homeSelected = homeTeamSelect.value !== '';
+    const awaySelected = awayTeamSelect.value !== '';
+    const homePitcherSelected = homePitcherSelect.value !== '';
+    const awayPitcherSelected = awayPitcherSelect.value !== '';
+
+    if (homeSelected && awaySelected && homePitcherSelected && awayPitcherSelected) {
+        updateProgressStep(3); // 예측 실행 단계
+    } else if (homeSelected && awaySelected) {
+        updateProgressStep(2); // 투수 선택 단계
+    } else {
+        updateProgressStep(1); // 팀 선택 단계
+    }
+}
+
 // 투수 데이터 (임시로 하드코딩, 나중에 데이터베이스에서 가져올 수 있음)
 const pitchers = {
   "LG Twins": [
@@ -331,20 +382,24 @@ homeTeamSelect.addEventListener('change', () => {
     updateTeamSelectOptions();
     updateTeamInfo(homeTeamSelect.value, true);
     showPitcherInfo(homeTeamSelect.value, homePitcherSelect.selectedIndex, true);
+    checkProgressConditions();
 });
 
 awayTeamSelect.addEventListener('change', () => {
     updateTeamSelectOptions();
     updateTeamInfo(awayTeamSelect.value, false);
     showPitcherInfo(awayTeamSelect.value, awayPitcherSelect.selectedIndex, false);
+    checkProgressConditions();
 });
 
 homePitcherSelect.addEventListener('change', () => {
     showPitcherInfo(homeTeamSelect.value, homePitcherSelect.selectedIndex, true);
+    checkProgressConditions();
 });
 
 awayPitcherSelect.addEventListener('change', () => {
     showPitcherInfo(awayTeamSelect.value, awayPitcherSelect.selectedIndex, false);
+    checkProgressConditions();
 });
 
 predictBtn.addEventListener('click', async () => {
@@ -363,6 +418,9 @@ predictBtn.addEventListener('click', async () => {
         `;
         return;
     }
+
+    // 프로그레스 업데이트 - 예측 실행
+    updateProgressStep(4);
 
     // 버튼 비활성화 및 로딩 상태로 변경
     const buttonText = predictBtn.querySelector('.button-text');
@@ -820,6 +878,7 @@ async function initialize() {
         updateTeamInfo(1, false);
         showPitcherInfo(0, 0, true);
         showPitcherInfo(1, 0, false);
+        checkProgressConditions();
     } else {
         resultDiv.innerHTML = `
             <div class="loading-message" style="color: #e74c3c;">

@@ -14,9 +14,43 @@
             <p class="app-subtitle">AI 기반 야구 경기 승률 분석 시스템</p>
         </header>
 
+        <!-- 프로그레스 인디케이터 -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="step active" data-step="1">
+                    <div class="step-circle">
+                        <span class="step-number">1</span>
+                    </div>
+                    <div class="step-label">팀 선택</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">
+                        <span class="step-number">2</span>
+                    </div>
+                    <div class="step-label">투수 선택</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">
+                        <span class="step-number">3</span>
+                    </div>
+                    <div class="step-label">예측 실행</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="4">
+                    <div class="step-circle">
+                        <span class="step-number">4</span>
+                    </div>
+                    <div class="step-label">결과 확인</div>
+                </div>
+            </div>
+        </div>
+
         <main class="app-main">
             <!-- 팀 선택 섹션 -->
             <section class="team-selection">
+                <h2>⚾ 경기할 팀을 선택해주세요</h2>
                 <div class="selector-group">
                     <div class="input-group">
                         <label for="home-team-select" class="input-label">홈팀</label>
@@ -33,26 +67,30 @@
             <!-- 팀 정보 표시 섹션 -->
             <section class="teams-display">
                 <div class="team-card" id="home-team-card">
-                    <div class="team-header">
-                        <img id="home-logo" src="" alt="홈팀 로고" class="team-logo">
-                        <h3 class="team-name" id="home-team-name">팀 선택</h3>
-                    </div>
-                    <div class="pitcher-section">
-                        <label for="home-pitcher" class="pitcher-label">선발 투수</label>
-                        <select id="home-pitcher" class="pitcher-select"></select>
-                        <div id="home-pitcher-info" class="pitcher-info"></div>
+                    <div class="card-content">
+                        <div class="team-header">
+                            <img id="home-logo" src="" alt="홈팀 로고" class="team-logo">
+                            <h3 class="team-name" id="home-team-name">팀 선택</h3>
+                        </div>
+                        <div class="pitcher-section">
+                            <label for="home-pitcher" class="pitcher-label">선발 투수</label>
+                            <select id="home-pitcher" class="pitcher-select"></select>
+                            <div id="home-pitcher-info" class="pitcher-info"></div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="team-card" id="away-team-card">
-                    <div class="team-header">
-                        <img id="away-logo" src="" alt="어웨이팀 로고" class="team-logo">
-                        <h3 class="team-name" id="away-team-name">팀 선택</h3>
-                    </div>
-                    <div class="pitcher-section">
-                        <label for="away-pitcher" class="pitcher-label">선발 투수</label>
-                        <select id="away-pitcher" class="pitcher-select"></select>
-                        <div id="away-pitcher-info" class="pitcher-info"></div>
+                    <div class="card-content">
+                        <div class="team-header">
+                            <img id="away-logo" src="" alt="어웨이팀 로고" class="team-logo">
+                            <h3 class="team-name" id="away-team-name">팀 선택</h3>
+                        </div>
+                        <div class="pitcher-section">
+                            <label for="away-pitcher" class="pitcher-label">선발 투수</label>
+                            <select id="away-pitcher" class="pitcher-select"></select>
+                            <div id="away-pitcher-info" class="pitcher-info"></div>
+                        </div>
                     </div>
                 </div>
             </section>
