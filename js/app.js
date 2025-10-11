@@ -425,23 +425,27 @@ predictBtn.addEventListener('click', async () => {
         modal.id = 'winrate-modal';
         modal.innerHTML = `
             <div class="modal-backdrop" style="position:fixed;z-index:1001;inset:0;background:rgba(0,0,0,0.18);"></div>
-            <div class="prediction-result modal-content" style="max-width:480px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);animation:modalFadeIn 0.3s ease-out;">
-                <h3>🏆 예측 결과</h3>
-                <div class="winrate-bar-container">
+            <div class="prediction-result modal-content" style="max-width:480px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);animation:modalFadeIn 0.3s ease-out;padding:36px;">
+                <h3 style="margin-bottom:24px;">🏆 예측 결과</h3>
+                <div class="winrate-bar-container" style="margin-bottom:32px;">
                     <div class="winrate-bar">
                         <div style="width:${homeProb*100}%">${homeWinRate}%</div>
                         <div style="width:${awayProb*100}%">${awayWinRate}%</div>
                     </div>
                 </div>
-                <div class="winrate-bar-labels">
+                <div class="winrate-bar-labels" style="margin-bottom:32px;">
                     <span>${homeTeam.team_name}</span>
                     <span>${awayTeam.team_name}</span>
                 </div>
-                <button id="show-stats-compare-btn" class="predict-button" style="margin:24px 0 0 0;min-width:140px;background:linear-gradient(90deg,#764ba2 0%,#667eea 100%);font-size:1.08em;">스텟 비교하기</button>
-                <div style="margin-top: 20px; font-size: 0.9rem; color: #666;">
+                <div style="display:flex;justify-content:center;margin-bottom:32px;">
+                    <button id="show-stats-compare-btn" class="predict-button" style="min-width:140px;background:linear-gradient(90deg,#764ba2 0%,#667eea 100%);font-size:1.08em;">스텟 비교하기</button>
+                </div>
+                <div style="margin-bottom:32px; font-size: 0.9rem; color: #666; text-align:center; padding:0 16px;">
                     💡 팀 성적, 투수 능력, 홈/원정 어드밴티지를 종합 분석한 결과입니다
                 </div>
-                <button id="close-winrate-modal-btn" class="predict-button" style="margin-top:32px;min-width:120px;">닫기</button>
+                <div style="display:flex;justify-content:center;">
+                    <button id="close-winrate-modal-btn" class="predict-button" style="min-width:120px;">닫기</button>
+                </div>
             </div>
         `;
         document.body.appendChild(modal);
@@ -467,92 +471,257 @@ predictBtn.addEventListener('click', async () => {
             const awayField = awayStatsObj.kbo_team_fielding_stats || {};
             const homeBase = homeStatsObj.kbo_team_baserunning_stats || {};
             const awayBase = awayStatsObj.kbo_team_baserunning_stats || {};
-            // 비교 표 생성 (디자인 개선)
-            const statTable = `
-                <style>
-                #stats-compare-modal table {
-                    width: 100%;
-                    margin: 18px 0 0 0;
-                    border-collapse: separate;
-                    border-spacing: 0;
-                    font-size: 1.08em;
-                    background: #f8fafc;
-                    border-radius: 12px;
-                    overflow: hidden;
-                    box-shadow: 0 2px 8px 0 #e0e7ff44;
-                }
-                #stats-compare-modal th, #stats-compare-modal td {
-                    padding: 10px 8px;
-                    text-align: center;
-                }
-                #stats-compare-modal thead th {
-                    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-                    color: #fff;
-                    font-size: 1.08em;
-                    border-bottom: 2.5px solid #a5b4fc;
-                }
-                #stats-compare-modal tbody tr.section-row td {
-                    font-weight: 700;
-                    font-size: 1.04em;
-                    background: #e0e7ff;
-                    color: #495057;
-                    border-top: 2px solid #c7d2fe;
-                }
-                #stats-compare-modal tbody tr:not(.section-row):hover {
-                    background: #f1f5f9;
-                }
-                #stats-compare-modal td.key {
-                    color: #667eea;
-                    font-weight: 600;
-                }
-                #stats-compare-modal td.value {
-                    font-family: 'Montserrat', 'Pretendard', sans-serif;
-                    font-size: 1.08em;
-                }
-                #stats-compare-modal td.value.home {
-                    color: #3b82f6;
-                    font-weight: 700;
-                }
-                #stats-compare-modal td.value.away {
-                    color: #f59e42;
-                    font-weight: 700;
-                }
-                </style>
-                <table>
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>${homeTeam.team_name}</th>
-                            <th>${awayTeam.team_name}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="section-row"><td colspan="3">타격</td></tr>
-                        <tr><td class="key">AVG</td><td class="value home">${homeStats.AVG ?? '-'}</td><td class="value away">${awayStats.AVG ?? '-'}</td></tr>
-                        <tr><td class="key">R(득점)</td><td class="value home">${homeStats.R ?? '-'}</td><td class="value away">${awayStats.R ?? '-'}</td></tr>
-                        <tr><td class="key">HR(홈런)</td><td class="value home">${homeStats.HR ?? '-'}</td><td class="value away">${awayStats.HR ?? '-'}</td></tr>
-                        <tr><td class="key">TB(루타)</td><td class="value home">${homeStats.TB ?? '-'}</td><td class="value away">${awayStats.TB ?? '-'}</td></tr>
-                        <tr><td class="key">RBI</td><td class="value home">${homeStats.RBI ?? '-'}</td><td class="value away">${awayStats.RBI ?? '-'}</td></tr>
-                        <tr class="section-row"><td colspan="3">주루</td></tr>
-                        <tr><td class="key">SB(도루)</td><td class="value home">${homeBase.SB ?? '-'}</td><td class="value away">${awayBase.SB ?? '-'}</td></tr>
-                        <tr><td class="key">SB%(도루성공률)</td><td class="value home">${homeBase.SBp ?? '-'}</td><td class="value away">${awayBase.SBp ?? '-'}</td></tr>
-                        <tr><td class="key">SBA(도루시도)</td><td class="value home">${homeBase.SBA ?? '-'}</td><td class="value away">${awayBase.SBA ?? '-'}</td></tr>
-                        <tr class="section-row"><td colspan="3">수비</td></tr>
-                        <tr><td class="key">FPCT(수비율)</td><td class="value home">${homeField.FPCT ?? '-'}</td><td class="value away">${awayField.FPCT ?? '-'}</td></tr>
-                        <tr><td class="key">E(실책)</td><td class="value home">${homeField.E ?? '-'}</td><td class="value away">${awayField.E ?? '-'}</td></tr>
-                        <tr><td class="key">DP(더블플레이)</td><td class="value home">${homeField.DP ?? '-'}</td><td class="value away">${awayField.DP ?? '-'}</td></tr>
-                    </tbody>
-                </table>
-            `;
+            // 투수 스탯도 가져오기
+            const homePitch = homeStatsObj.kbo_team_pitching_stats || {};
+            const awayPitch = awayStatsObj.kbo_team_pitching_stats || {};
+
+            // 탭별 스탯 데이터 준비
+            const battingStats = [
+                { key: 'AVG', label: '타율', home: homeStats.AVG, away: awayStats.AVG },
+                { key: 'R', label: '득점', home: homeStats.R, away: awayStats.R },
+                { key: 'HR', label: '홈런', home: homeStats.HR, away: awayStats.HR },
+                { key: 'TB', label: '루타', home: homeStats.TB, away: awayStats.TB },
+                { key: 'RBI', label: 'RBI', home: homeStats.RBI, away: awayStats.RBI },
+                { key: 'H', label: '안타', home: homeStats.H, away: awayStats.H }
+            ];
+
+            const pitchingStats = [
+                { key: 'ERA', label: '평균자책점', home: homePitch.ERA, away: awayPitch.ERA },
+                { key: 'WHIP', label: 'WHIP', home: homePitch.WHIP, away: awayPitch.WHIP },
+                { key: 'W', label: '승', home: homePitch.W, away: awayPitch.W },
+                { key: 'L', label: '패', home: homePitch.L, away: awayPitch.L },
+                { key: 'SO', label: '삼진', home: homePitch.SO, away: awayPitch.SO },
+                { key: 'BB', label: '볼넷', home: homePitch.BB, away: awayPitch.BB }
+            ];
+
+            const fieldingStats = [
+                { key: 'FPCT', label: '수비율', home: homeField.FPCT, away: awayField.FPCT },
+                { key: 'E', label: '실책', home: homeField.E, away: awayField.E },
+                { key: 'DP', label: '더블플레이', home: homeField.DP, away: awayField.DP },
+                { key: 'PO', label: '풋아웃', home: homeField.PO, away: awayField.PO }
+            ];
+
+            const baserunningStats = [
+                { key: 'SB', label: '도루', home: homeBase.SB, away: awayBase.SB },
+                { key: 'SBp', label: '도루성공률', home: homeBase.SBp, away: awayBase.SBp },
+                { key: 'SBA', label: '도루시도', home: homeBase.SBA, away: awayBase.SBA },
+                { key: 'CS', label: '도루실패', home: homeBase.CS, away: awayBase.CS }
+            ];
+
+            const generateStatTable = (stats) => {
+                return stats.map(stat => `
+                    <div class="stat-row">
+                        <div class="stat-label">${stat.label}</div>
+                        <div class="stat-values">
+                            <div class="stat-value home-value">${stat.home ?? '-'}</div>
+                            <div class="stat-value away-value">${stat.away ?? '-'}</div>
+                        </div>
+                    </div>
+                `).join('');
+            };
             statModal.innerHTML = `
                 <div class="modal-backdrop" style="position:fixed;z-index:1001;inset:0;background:rgba(0,0,0,0.18);"></div>
-                <div class="prediction-result modal-content" style="max-width:600px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);animation:modalFadeIn 0.3s ease-out;">
-                    <h3>📊 스텟 비교</h3>
-                    <div id="stats-compare-content">${statTable}</div>
-                    <button id="close-stats-modal-btn" class="predict-button" style="margin-top:28px;min-width:120px;">닫기</button>
+                <div class="stats-modal-content" style="max-width:600px;min-width:450px;max-height:90vh;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);animation:modalFadeIn 0.3s ease-out;background:white;border-radius:20px;padding:28px;box-shadow:0 15px 35px rgba(0,0,0,0.15);">
+                    <div class="stats-header">
+                        <h3 style="margin:0 0 20px 0;text-align:center;color:#333;font-size:1.4rem;">📊 팀 스텟 비교</h3>
+                        <div class="team-header-container" style="margin-bottom:24px;">
+                            <div class="team-header-item">
+                                <img src="${homeTeam.logo}" alt="${homeTeam.team_name}" class="team-logo-small">
+                                <span class="team-name-small">${homeTeam.team_name}</span>
+                            </div>
+                            <div class="vs-divider-small">VS</div>
+                            <div class="team-header-item">
+                                <img src="${awayTeam.logo}" alt="${awayTeam.team_name}" class="team-logo-small">
+                                <span class="team-name-small">${awayTeam.team_name}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tabs-container" style="flex:1;display:flex;flex-direction:column;min-height:0;">
+                        <div class="tab-buttons">
+                            <button class="tab-btn active" data-tab="batting">⚾ 타격</button>
+                            <button class="tab-btn" data-tab="pitching">🥎 투수</button>
+                            <button class="tab-btn" data-tab="fielding">🧤 수비</button>
+                            <button class="tab-btn" data-tab="baserunning">🏃 주루</button>
+                        </div>
+
+                        <div class="tab-content-container" style="flex:1;overflow:hidden;">
+                            <div class="tab-content active" id="batting-tab">
+                                ${generateStatTable(battingStats)}
+                            </div>
+                            <div class="tab-content" id="pitching-tab">
+                                ${generateStatTable(pitchingStats)}
+                            </div>
+                            <div class="tab-content" id="fielding-tab">
+                                ${generateStatTable(fieldingStats)}
+                            </div>
+                            <div class="tab-content" id="baserunning-tab">
+                                ${generateStatTable(baserunningStats)}
+                            </div>
+                        </div>
+
+                        <div class="modal-footer" style="margin-top:20px;padding-top:16px;border-top:1px solid #e9ecef;">
+                            <div style="display:flex;justify-content:center;">
+                                <button id="close-stats-modal-btn" class="predict-button" style="min-width:120px;">닫기</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <style>
+                .stats-modal-content {
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .team-header-container {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 16px 24px;
+                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                    border-radius: 12px;
+                }
+
+                .team-header-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    flex: 1;
+                }
+
+                .team-logo-small {
+                    width: 32px;
+                    height: 32px;
+                    object-fit: contain;
+                    border-radius: 50%;
+                }
+
+                .team-name-small {
+                    font-weight: 600;
+                    color: #333;
+                    font-size: 0.95rem;
+                }
+
+                .vs-divider-small {
+                    font-weight: 700;
+                    color: #667eea;
+                    font-size: 0.9rem;
+                    padding: 0 16px;
+                }
+
+
+                .tab-buttons {
+                    display: flex;
+                    gap: 2px;
+                    background: #f1f3f4;
+                    border-radius: 8px;
+                    padding: 3px;
+                    margin-bottom: 20px;
+                }
+
+                .tab-btn {
+                    flex: 1;
+                    padding: 8px 12px;
+                    border: none;
+                    background: transparent;
+                    border-radius: 6px;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    color: #666;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+
+                .tab-btn.active {
+                    background: white;
+                    color: #667eea;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+
+                .tab-btn:hover:not(.active) {
+                    color: #333;
+                }
+
+
+                .tab-content {
+                    display: none;
+                    padding: 8px 0;
+                }
+
+                .tab-content.active {
+                    display: block;
+                }
+
+                .stat-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 8px 14px;
+                    margin-bottom: 1px;
+                    background: #fafbfc;
+                    border-radius: 6px;
+                    border-left: 3px solid #e9ecef;
+                    transition: all 0.2s ease;
+                }
+
+                .stat-row:hover {
+                    background: #f1f3f4;
+                    border-left-color: #667eea;
+                }
+
+                .stat-label {
+                    font-weight: 600;
+                    color: #495057;
+                    font-size: 0.85rem;
+                    flex: 1;
+                }
+
+                .stat-values {
+                    display: flex;
+                    gap: 20px;
+                    align-items: center;
+                }
+
+                .stat-value {
+                    font-weight: 700;
+                    font-size: 0.85rem;
+                    min-width: 55px;
+                    text-align: center;
+                    padding: 3px 6px;
+                    border-radius: 5px;
+                }
+
+                .home-value {
+                    color: #3b82f6;
+                    background: rgba(59, 130, 246, 0.1);
+                }
+
+                .away-value {
+                    color: #f59e0b;
+                    background: rgba(245, 158, 11, 0.1);
+                }
+                </style>
             `;
             document.body.appendChild(statModal);
+
+            // 탭 기능 구현
+            const tabButtons = statModal.querySelectorAll('.tab-btn');
+            const tabContents = statModal.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // 모든 탭 비활성화
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // 클릭된 탭 활성화
+                    button.classList.add('active');
+                    const tabName = button.getAttribute('data-tab');
+                    statModal.querySelector(`#${tabName}-tab`).classList.add('active');
+                });
+            });
+
             statModal.querySelector('#close-stats-modal-btn').onclick = () => {
                 statModal.remove();
             };
@@ -567,13 +736,15 @@ predictBtn.addEventListener('click', async () => {
         modal.id = 'winrate-modal';
         modal.innerHTML = `
             <div class="modal-backdrop" style="position:fixed;z-index:1001;inset:0;background:rgba(0,0,0,0.18);"></div>
-            <div class="prediction-result modal-content" style="max-width:480px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);animation:modalFadeIn 0.3s ease-out;">
-                <h3 style='color:#e74c3c;'>❌ 오류</h3>
-                <div class="loading-message" style="color: #e74c3c;background:none;box-shadow:none;padding:0;">
+            <div class="prediction-result modal-content" style="max-width:480px;min-width:320px;z-index:1002;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);animation:modalFadeIn 0.3s ease-out;padding:36px;">
+                <h3 style='color:#e74c3c;margin-bottom:24px;text-align:center;'>❌ 오류</h3>
+                <div class="loading-message" style="color: #e74c3c;background:none;box-shadow:none;padding:0;margin-bottom:32px;text-align:center;">
                     승률 계산 중 오류가 발생했습니다<br>
                     <small>${error.message}</small>
                 </div>
-                <button id="close-winrate-modal-btn" class="predict-button" style="margin-top:32px;min-width:120px;">닫기</button>
+                <div style="display:flex;justify-content:center;">
+                    <button id="close-winrate-modal-btn" class="predict-button" style="min-width:120px;">닫기</button>
+                </div>
             </div>
         `;
         document.body.appendChild(modal);
