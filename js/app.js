@@ -438,7 +438,14 @@ function showPitcherInfo(teamIdx, pitcherIdx, isHome) {
     const pitcher = team.pitchers[pitcherIdx];
 
     if (pitcher && pitcher.img_url) {
-        infoDiv.innerHTML = `<img src="${pitcher.img_url}" alt="${pitcher.name}" class="pitcher-face"><br><b>${pitcher.name}</b><br>ERA: ${pitcher.ERA}`;
+        infoDiv.innerHTML = `
+            <img src="${pitcher.img_url}" alt="${pitcher.name}" class="pitcher-face">
+            <div class="pitcher-details">
+                <div class="pitcher-position">Starting Pitcher</div>
+                <div class="pitcher-name">${pitcher.name}</div>
+                <div class="pitcher-era">ERA ${pitcher.ERA}</div>
+            </div>
+        `;
         infoDiv.style.display = 'flex'; // 투수 정보가 있을 때만 표시
 
         // 투수 정보가 표시된 후 부드럽게 스크롤
